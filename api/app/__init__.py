@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_pymongo import PyMongo
-from ..config import Config  
+from api.config import Config  
 from .db import init_db
 
 mongo = None

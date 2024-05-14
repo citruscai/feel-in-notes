@@ -1,6 +1,12 @@
 from flask import Flask
-app = Flask(__name__)
 
-@app.route("/api/python")
-def hello_world():
-    return "<p>Hello, World!</p>"
+
+def create_app(test_config =None):
+    app = Flask(__name__)
+
+    if test_config:
+        app.config.update(test_config)
+
+
+    return app
+ 

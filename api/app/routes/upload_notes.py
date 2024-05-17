@@ -1,12 +1,24 @@
 from flask import Flask,request,jsonify
 import textract
+from ..utils.process_notes import process_text
+
 
 
 app = Flask(__name__)
 
 @app.route('/upload', methods =['POST'])
 def upload_file():
-    pass
+    if 'file' not in request.files:
+        return jsonify({'error':'No file uploaded'}),400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error':'No file selected'}),400
+    try:
+        text = extract_text(file)
+        processed_text = process_text(text)
+        return jsonify({'text':processed_text}),200
+    except Exception as e:
+        return jsonify({'error':str(e)}),400
     
        
 
@@ -18,6 +30,4 @@ def extract_text(file):
     except Exception as e: 
         return str(e)
 
-#where the magic is suppose to happen...we create the notes
-def process_notes(text,level):
-    pass
+

@@ -74,7 +74,7 @@ def structure_notes(text):
     frequency_penalty=0,
     presence_penalty=0
   )
-  
+ return response.choices[0].text
 
    
 
@@ -87,13 +87,15 @@ def process_text(text,level):
     #but if it is not an important word, we just leave the word as is
     #then use .join to join all words together into an original text
     processed_text = ''.join('['+word+ ']' if word in important_words else word for word in words)
+    formatted_text = structure_notes(processed_text)
   elif level =="high":
     important_sentences = extract_important_sentences(text)
     sentences = sent_tokenize(text)
     processed_text = ''.join('['+sentence+ ']' if sentence in important_sentences else sentence for sentence in sentences)
+    formatted_text = structure_notes(processed_text)
   elif level == "questions":
     questions = generate_questions(text)
     return questions
   else:
-    processed_text = text
-  return processed_text
+     return text
+  return formatted_text

@@ -20,13 +20,26 @@ def extract_important_words(text):
 """Alternarive level to fill in the blanks, instead user will be given a set of 
 questions and will use their given notes to follow along and answer them"""
 def generate_questions(text):
-   pass
+  try:
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=f"Generate questions based on the following text: {text}",
+        max_tokens=300,
+        seed = 88,
+        
+    )
+    questions = response.choices[0].text.strip().split("\n")
+    return questions
+  except Exception as e:
+    print(f"Error generating questions: {e}")
+    return []
+   
 
    
 
 
 def process_text(text,level):
-   pass
+  pass
    
    
     

@@ -1,12 +1,13 @@
-from flask import Flask,request,jsonify
+from flask import Blueprint,request,jsonify
 import textract
 from ..utils.process_notes import process_text
 
 
+notes_blueprint = Blueprint('notes',__name__)
 
-app = Flask(__name__)
 
-@app.route('/upload', methods =['POST'])
+
+@notes_blueprint.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
         return jsonify({'error':'No file uploaded'}),400

@@ -1,18 +1,26 @@
-from flask import Blueprint,request,jsonify
 import textract
 from ..utils.process_notes import process_text
 import uuid
 from datetime import datetime
 from app.db import mongo
+from flask import Blueprint,request,jsonify
 
 
 
 notes_blueprint = Blueprint('notes',__name__)
 
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'doc', 'docx', 'ppt', 'pptx','mp3','epub'}
+
+def allowed_file(filename):
+    """
+    Checks if the file extension is allowed
+    """
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 @notes_blueprint.route('/upload', methods=['POST'])
 def upload_file():
+    """Uploads a file to the database and then converts it into worksheet"""
     print("Received request with files:", request.files)
     if 'file' not in request.files:
         print("Error: No file part in the request")
@@ -21,6 +29,8 @@ def upload_file():
     if file.filename == '':
         print("Error: No file selected")
         return jsonify({'error': 'No file selected'}), 400
+    if not allowed_file(file.filename):
+        return jsonify({'error': 'Unsupported file format'}), 400
     
     try:
         notes_id = uuid.uuid4()
@@ -34,11 +44,14 @@ def upload_file():
         return jsonify({'text': processed_text}), 200
     except Exception as e:
         print(f"Server error: {str(e)}")
-        return jsonify({'error': str(e)}), 400
+        return jsonify({'error': str(e)}), 500
 
 
 #using textract to extract the text from the uploaded file the user submits
 def extract_text(file):
+    """
+    Extracts text from the uploaded file.
+    """
     try:
         text =  text = textract.process(file.read(),extension='.'+file.filename.split('.')[-1])
         return text.decode('utf-8')

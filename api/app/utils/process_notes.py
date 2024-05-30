@@ -113,7 +113,7 @@ def process_text(text,level="high"):
   elif level =="high":
     important_sentences = extract_important_sentences(text)
     sentences = sent_tokenize(text)
-    processed_text = ''.join('['+sentence+ ']' if sentence in important_sentences else sentence for sentence in sentences)
+    processed_text = bracket_important_sentences(sentences, important_sentences) 
     formatted_text = structure_notes(processed_text)
   elif level == "questions":
     questions = generate_questions(text)

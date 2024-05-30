@@ -66,23 +66,43 @@ def structure_notes(text):
 
     Now, based on this format, generate notes for this text: \"{text}\"
     """
- response = openai.Completion.create(
-    engine = "text-davinci-003",
-    prompt=prompt_text,
-    max_tokens=1000,
-    seed=88,
-    temperature=0.7,
-    top_p=1,
-    frequency_penalty=0,
-    presence_penalty=0
-  )
+ response = client.completions.create(model = "gpt-3.5-turbo",
+ prompt=prompt_text,
+ seed=88)
  return response.choices[0].text
+
+def normalize_text(text):
+    """Normalize text by removing punctuation, converting to lowercase, and trimming whitespace."""
+    text = re.sub(r'\s+', ' ', text)  # Collapse whitespace
+    text = re.sub(r'[^\w\s]', '', text)  # Remove punctuation
+    return text.lower().strip()
+
+def bracket_important_sentences(sentences, important_sentences):
+  """For putting brackets around the sentences, this will be a more extensive process compared to putting brackets around 
+  words due to potential sentence parsing problems  """
+  processed_text = []
+  for sentence in sentences:
+   is_imporant = False 
+   for important_sentence in important_sentences:
+      if fuzz.ratio(sentence, important_sentence) >= 70:
+         is_imporant = True
+         break
+   if is_imporant:
+        processed_text.append(f'[{sentence}]')
+   else:
+         processed_text.append(sentence)
+  return processed_text
+
+
+
+
+
 
    
 
-
-def process_text(text,level):
+def process_text(text,level="high"):
   if level == "moderate":
+    print("moderate")
     important_words = extract_important_words(text)
     words = word_tokenize(text)
     #if else condition: we go through every word, if the word is in the important words array, we will put brackets around it

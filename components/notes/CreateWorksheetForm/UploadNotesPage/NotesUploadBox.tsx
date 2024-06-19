@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from 'next/image'
+import Image from 'next/image';
 import {
   FileUploader,
   FileUploaderContent,
@@ -9,13 +9,15 @@ import {
   FileInput,
 } from "@/components/ui/FileUploader"; 
 import { Paperclip } from "lucide-react";
+import { useCreateWorksheetContext } from "@/context/CreateWorksheetConext";
 
+type NotesUploadBoxProps = {
+  onUploadSuccess: () => void;
+};
 
-
-
-const NotesUploadBox: React.FC = () => {
+const NotesUploadBox: React.FC<NotesUploadBoxProps> = ({ onUploadSuccess }) => {
   const [files, setFiles] = useState<File[] | null>(null);
-  
+  const { setFormState ,formState} = useCreateWorksheetContext();
 
   const dropZoneConfig = {
     maxFiles: 1,
@@ -44,10 +46,15 @@ const NotesUploadBox: React.FC = () => {
             }
 
             const data = await response.json();
-            console.log('Extracted text:', data.text);
+            console.log(data.text);
+            
+            setFormState((prev) => ({
+              ...prev,
+              notes: { ...prev.notes, text: data.text },
+            }));
+            
 
-
-            await submitNotes(data.text);
+            onUploadSuccess(); 
           } catch (error) {
             if (error instanceof Error) {
               console.error('Error during text extraction:', error.message);
@@ -58,27 +65,7 @@ const NotesUploadBox: React.FC = () => {
       reader.readAsDataURL(file);
     }
   };
-
-  const submitNotes = async (text: string): Promise<void> => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notes/upload`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text })
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to upload notes: ${response.statusText}`);
-      }
-
-      console.log("Notes uploaded successfully");
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error("Error:", error.message);
-      }
-    }
-  };
-
+ console.log("formState in notesupload component code" ,formState.notes.text)
   return (
     <FileUploader
       value={files}
@@ -88,7 +75,7 @@ const NotesUploadBox: React.FC = () => {
     >
       <FileInput className="outline-dashed outline-1 outline-border text-foreground">
         <div className="flex items-center justify-center flex-col pt-3 pb-4 w-full">
-          <Image src="/file-upload-icon.svg" alt="File upload icon" width={40} height={32} />
+          <img src="/file-upload-icon.svg" alt="File upload icon" width={40} height={32} />
           <p className="mb-1 text-sm text-muted-foreground">
             <span className="font-semibold text-primary">Click to upload</span>
             &nbsp; or drag and drop

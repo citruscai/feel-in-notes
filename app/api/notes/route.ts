@@ -1,30 +1,42 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  if (req.method === 'POST') {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notes/upload`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(req.body)
-      });
+import { PDFDocument } from 'pdf-lib';
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+export const uploadWorksheet = async (pdfBlob: Blob, fileName: string): Promise<string> => {
+  const formData = new FormData();
+  formData.append('file', pdfBlob, fileName);
+  console.log('Uploading PDF:', fileName);
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/worksheets/upload`, {
+      method: 'POST',
+      body: formData,
+    });
 
-      const data = await response.json();
-      res.status(200).json(data);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    if (!response.ok) {
+      throw new Error(`Failed to upload PDF: ${response.statusText}`);
     }
-  } else {
-    res.setHeader('Allow', ['POST']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+
+    const data = await response.json();
+    return data.file_url;
+  } catch (error) {
+    console.error('Error uploading PDF:', error);
+    throw error;
   }
-}
+};
+
+export const saveWorksheetUrls = async (id: string, guidedNotesUrl: string, solutionsUrl: string): Promise<void> => {
+  console.log('Saving URLs:', { id, guidedNotesUrl, solutionsUrl });
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/worksheets/save-urls`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, guidedNotesUrl, solutionsUrl }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to save PDF URLs: ${response.statusText}`);
+    }
+  } catch (error) {
+    console.error('Error saving URLs:', error);
+    throw error;
+  }
+};

@@ -3,7 +3,7 @@ import boto3
 import os
 import tempfile
 from werkzeug.utils import secure_filename
-from bson.objectid import ObjectId
+from bson import json_util, ObjectId
 from app.db import get_worksheets_collection
 from dotenv import load_dotenv
 import uuid
@@ -114,6 +114,17 @@ def save_urls():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@worksheets_bp.route("/<worksheet_id>", methods=["GET"])
+def get_worksheet(worksheet_id):
+    try:
+        worksheets = get_worksheets_collection()
+        worksheet = worksheets.find_one({"id": worksheet_id})
+        if not worksheet:
+            return jsonify({"error": "Worksheet not found"}), 404
+        
+        return json_util.dumps(worksheet), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @worksheets_bp.route("/<worksheet_id>/urls", methods=["GET"])
 def get_urls(worksheet_id):

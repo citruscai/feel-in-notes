@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import CreateWorksheetForm from '@/components/notes/CreateWorksheetForm/CreateWorksheetForm';
+import CreateWorksheetForm from '@/components/notes/CreateWorksheetForm/CreateWorkSheetForm';
 import './globals.css';
 
 export default function Home() {

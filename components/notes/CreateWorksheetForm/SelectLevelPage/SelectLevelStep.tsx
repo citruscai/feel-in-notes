@@ -1,9 +1,11 @@
+import React, { useState } from 'react';
 import { useCreateWorksheetContext } from '@/context/CreateWorksheetConext';
 import LevelChoices from './LevelChoices';
-import React, { useState } from 'react';
 import LevelDescriptions from './LevelDescriptions';
 import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
+import { generatePDF } from '@/lib/worksheetGenerator';
+import { uploadWorksheet, saveWorksheetUrls } from '@/app/api/worksheets/route';
 
 type SelectLevelStepProps = {
   prev: () => void;
@@ -13,17 +15,19 @@ const SelectLevelStep: React.FC<SelectLevelStepProps> = ({ prev }) => {
   const { formState, setFormState } = useCreateWorksheetContext();
   const [selectedLevel, setSelectedLevel] = useState(formState.notes.level);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+  const router = useRouter();
 
   const handleLevelChange = (value: string) => {
     setFormState((prev) => ({
       ...prev,
       notes: { ...prev.notes, level: value },
     }));
-   // console.log()
     setSelectedLevel(value);
   };
-  console.log("Formstate in select level step:" ,formState.notes.text);
+
+  const replaceNonStandardQuotes = (text: string) => {
+    return text.replace(/‘/g, "'").replace(/’/g, "'");
+  };
 
   const submitData = async () => {
     setIsSubmitting(true);
@@ -38,8 +42,42 @@ const SelectLevelStep: React.FC<SelectLevelStepProps> = ({ prev }) => {
         throw new Error(`Failed to upload notes: ${response.statusText}`);
       }
 
-      console.log("Notes uploaded successfully", response);
-      // Redirect to success page
+      const jsonResponse = await response.json();
+
+      // Log the entire response to see if there are any issues
+      console.log('Full Response:', jsonResponse);
+
+      let parsedText;
+      try {
+        const sanitizedText = jsonResponse.text
+          .replace(/^```json\n/, '')
+          .replace(/\n```$/, '')
+          .replace(/\\n/g, '');
+        const standardizedText = replaceNonStandardQuotes(sanitizedText);
+        console.log('Sanitized Text:', standardizedText);  // Log sanitized text
+        parsedText = JSON.parse(standardizedText);
+        console.log('Parsed Text:', parsedText);  // Log parsed text
+      } catch (parseError) {
+        console.error('Error parsing text field:', parseError);
+        console.error('Sanitized text:', jsonResponse.text);
+        throw new Error('Invalid JSON structure in text field.');
+      }
+
+      // Always generate PDF using the simple template
+      const guidedNotesPdf = await generatePDF(parsedText, jsonResponse.level);
+      const solutionsPdf = await generatePDF(parsedText, jsonResponse.level, true);
+
+      const sanitizedTitle = parsedText.title
+        ? parsedText.title.replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').toLowerCase()
+        : 'guided-notes';
+
+      const guidedNotesUrl = await uploadWorksheet(guidedNotesPdf, `${sanitizedTitle}-guided-notes.pdf`);
+      const solutionsUrl = await uploadWorksheet(solutionsPdf, `${sanitizedTitle}-solutions.pdf`);
+      console.log("Guided Notes URL: ", guidedNotesUrl);
+      console.log("Solutions  URL: ", solutionsUrl);
+      await saveWorksheetUrls(jsonResponse.id, guidedNotesUrl, solutionsUrl);
+
+      router.push(`/guidednotes/${jsonResponse.id}`);
     } catch (error) {
       if (error instanceof Error) {
         console.error("Error:", error.message);

@@ -21,9 +21,14 @@ const NotesUploadBox: React.FC<NotesUploadBoxProps> = ({ onUploadSuccess }) => {
 
   const dropZoneConfig = {
     maxFiles: 1,
-    maxSize: 1024 * 1024 * 4,
     multiple: false,
-    accept: { 'application/pdf': ['.pdf'], 'application/msword': ['.doc', '.docx'], 'text/plain': ['.txt'] }
+    accept: {
+      'application/pdf': ['.pdf'],
+      'application/msword': ['.doc', '.docx'],
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation': ['.pptx'],
+      'application/vnd.ms-powerpoint': ['.ppt'],
+      'text/plain': ['.txt']
+    }
   };
 
   const handleFileChange = async (newFiles: File[] | null) => {
@@ -81,7 +86,7 @@ const NotesUploadBox: React.FC<NotesUploadBoxProps> = ({ onUploadSuccess }) => {
             &nbsp; or drag and drop
           </p>
           <p className="text-xs text-muted-foreground">
-            TXT, PDF, DOC, DOCX
+            PPT, PPTX,TXT, PDF, DOC, DOCX
           </p>
         </div>
       </FileInput>

@@ -27,12 +27,15 @@ const FillInTheBlankNotes: React.FC = () => {
   };
 
   useEffect(() => {
+    // Recalculate input widths on initial load
     const inputs = document.querySelectorAll('.dynamic-input');
     inputs.forEach((input, index) => {
       if (input instanceof HTMLInputElement) {
-        const cleanPart = worksheet?.sections?.flatMap((section: Section) => section.content.join(' ').split(/(<mark>.*?<\/mark>)/g))
-          .filter(part => part.startsWith('<mark>') && part.endsWith('</mark>'))
-          .map(part => part.replace(/<\/?mark>/g, ''))[index];
+        const cleanPart = worksheet?.sections?.flatMap((section: Section) =>
+          section.content.join(' ').split(/(<mark>.*?<\/mark>)/g)
+        )
+          .filter((part: string) => part.startsWith('<mark>') && part.endsWith('</mark>'))
+          .map((part: string) => part.replace(/<\/?mark>/g, ''))[index];
         if (cleanPart) {
           const width = Math.min(getTextWidth(cleanPart) + 20, 300) + 'px'; // Added max width of 300px
           input.style.width = width;
@@ -57,11 +60,11 @@ const FillInTheBlankNotes: React.FC = () => {
         <div className="text-xl font-semibold">{worksheet.title}</div>
       </header>
       <div className="w-full max-w-4xl mx-auto">
-        {worksheet.sections.map((section, sectionIndex) => (
+        {worksheet.sections.map((section: Section, sectionIndex: number) => (
           <div key={sectionIndex} className="mb-8">
             <h2 className="text-lg font-bold mb-4">{section.title}</h2>
-            {section.content.map((paragraph, paragraphIndex) => {
-              const parts = paragraph.split(/(<mark>.*?<\/mark>)/g).map((part, index) => {
+            {section.content.map((paragraph: string, paragraphIndex: number) => {
+              const parts = paragraph.split(/(<mark>.*?<\/mark>)/g).map((part: string, index: number) => {
                 if (part.startsWith('<mark>') && part.endsWith('</mark>')) {
                   const cleanPart = part.replace(/<\/?mark>/g, '');
                   const inputValue = userAnswers[answerIndex] || '';

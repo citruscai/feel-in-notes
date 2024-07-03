@@ -21,3 +21,9 @@ export interface Params {
       id: string;
     };
   }
+
+  export interface QuestionItem {
+    question: string;
+
+  }
+  

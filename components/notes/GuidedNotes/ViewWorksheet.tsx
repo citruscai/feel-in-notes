@@ -5,6 +5,7 @@ import QuestionAnswerNotes from './QuestionAnswerNotes';
 import Sidebar from './Sidebar';
 import PDFViewer from './PdfViewer';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { Section } from '@/lib/types';
 
 interface ViewWorksheetProps {
   worksheetId: string;
@@ -28,7 +29,7 @@ const ViewWorksheet: React.FC<ViewWorksheetProps> = ({ worksheetId, view, setVie
         const worksheetData = await response.json();
         setWorksheet(worksheetData);
 
-        const numAnswers = worksheetData.questions ? worksheetData.questions.length : worksheetData.sections.reduce((count: number, section) => {
+        const numAnswers = worksheetData.questions ? worksheetData.questions.length : worksheetData.sections.reduce((count: number, section: Section) => {
           return count + (section.content.join(' ').match(/<mark>/g) || []).length;
         }, 0);
 

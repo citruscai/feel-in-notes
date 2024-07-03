@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { NotesContext } from '@/context/NotesContext';
 import { Button } from "@/components/ui/button";
+import { QuestionItem } from '@/lib/types';
 
 const QuestionAnswerNotes: React.FC = () => {
   const context = useContext(NotesContext);
@@ -28,7 +29,7 @@ const QuestionAnswerNotes: React.FC = () => {
           <div className="text-xl font-semibold">{worksheet.title}</div>
         </div>
       </header>
-      {worksheet.questions.map((questionItem, questionIndex) => {
+      {worksheet.questions.map((questionItem: QuestionItem, questionIndex: number) => {
         const question = questionItem.question;
         const inputValue = userAnswers[questionIndex] || '';
         

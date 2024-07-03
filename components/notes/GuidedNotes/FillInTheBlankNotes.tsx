@@ -1,7 +1,7 @@
 import React, { useContext, useRef, useEffect } from 'react';
 import { NotesContext } from '@/context/NotesContext';
 import { Button } from "@/components/ui/button";
-import { Section } from '@/app/api/types';
+import { Section } from '@/lib/types';
 
 const FillInTheBlankNotes: React.FC = () => {
   const context = useContext(NotesContext);

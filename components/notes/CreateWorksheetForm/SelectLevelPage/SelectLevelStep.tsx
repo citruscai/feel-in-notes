@@ -28,6 +28,23 @@ const SelectLevelStep: React.FC<SelectLevelStepProps> = ({ prev }) => {
     return text.replace(/‘/g, "'").replace(/’/g, "'");
   };
 
+  const uploadWorksheet = async (pdf: Blob, fileName: string): Promise<string> => {
+    const formData = new FormData();
+    formData.append('file', pdf, fileName);
+    
+    const response = await fetch('/api/worksheets/upload', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to upload PDF: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.file_url;
+  };
+
   const submitData = async () => {
     setIsSubmitting(true);
     try {

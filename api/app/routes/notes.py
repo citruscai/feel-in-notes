@@ -32,7 +32,8 @@ def upload_text():
         worksheet_collection.insert_one({
             'id': notes_id,
             'text': processed_text,
-            'date_created': datetime.now()
+            'date_created': datetime.now(),
+            'level': level
         })
         response = {
             'text': processed_text,

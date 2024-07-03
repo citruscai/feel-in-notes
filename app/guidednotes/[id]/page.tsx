@@ -1,14 +1,23 @@
 "use client"
-import ViewWorksheet from '@/components/notes/ViewWorksheet/ViewWorksheet';
-import InteractiveGuidedNotes from '@/components/notes/ViewWorksheet/ViewWorksheet';
+import React, { useEffect, useState } from 'react';
+import { NotesProvider } from '@/context/NotesContext';
+import ViewWorksheet from '@/components/notes/GuidedNotes/ViewWorksheet';
+import { fetchWorksheet } from '@/lib/fetchWorksheet';
 import { useParams } from 'next/navigation';
 
-const NotesPage = () => {
-const { id } = useParams();
+const GuidedNotesPage: React.FC = () => {
+  const { id } = useParams();
+  const [view, setView] = useState<'pdf' | 'interactive'>('pdf');
 
-if (!id) return null; 
+  if (!id) {
+    return <div>Error: Invalid worksheet ID</div>;
+  }
 
-return <ViewWorksheet id={id as string} />;
+  return (
+    <NotesProvider>
+      <ViewWorksheet worksheetId={id as string} view={view} setView={setView} />
+    </NotesProvider>
+  );
 };
 
-export default NotesPage;
+export default GuidedNotesPage;

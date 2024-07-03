@@ -120,9 +120,10 @@ def structure_notes(text):
 def structure_questions(text):
     """Generate structured questions from text using Gemini API."""
     prompt_text = f"""
-    Please convert the following marked text into a structured JSON format without altering any content. Organize the text into a JSON object with a 'title' for the overall text and 'questions' as the top-level key and a list of individual questions as the value. Each question should be a dictionary with 'question' and 'answer' keys. The 'question' value should be the question text, and the 'answer' value should be the corresponding answer. Do not modify the text inside the tags Example structure:
+    Please convert the following marked text into a structured JSON format without altering any content. Organize the text into a JSON object with a generated 'title' for the overall text and 'questions' as the top-level key and a list of individual questions as the value. Each question should be a dictionary with 'question' and 'answer' keys. The 'question' value should be the question text, and the 'answer' value should be the corresponding answer. Do not modify the text inside the tags Example structure:
 
     {{
+    "title": "Sample Text",
       "questions": [
         {{
           "question": "What is the capital of France?",

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { Params } from '@/lib/types';
 
-export async function GET(req: NextRequest, { params }) {
+export async function GET(req: NextRequest, { params }: Params) {
   const { id } = params;
 
   if (!id) {

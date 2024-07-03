@@ -11,3 +11,9 @@ export type Worksheet ={
     text:string,
     level:string
 }
+
+export interface Params {
+    params: {
+      id: string;
+    };
+  }

@@ -1,8 +1,7 @@
 "use client"
-import React, { useEffect, useState } from 'react';
+import React, {  useState } from 'react';
 import { NotesProvider } from '@/context/NotesContext';
 import ViewWorksheet from '@/components/notes/GuidedNotes/ViewWorksheet';
-import { fetchWorksheet } from '@/lib/fetchWorksheet';
 import { useParams } from 'next/navigation';
 
 const GuidedNotesPage: React.FC = () => {

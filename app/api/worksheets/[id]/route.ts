@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(req: NextRequest) {
-  const { id } = req.query;
+export async function GET(req: NextRequest, { params }) {
+  const { id } = params;
+
+  if (!id) {
+    return NextResponse.json({ message: 'ID is required' }, { status: 400 });
+  }
 
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/worksheets/${id}`);

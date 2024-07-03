@@ -4,7 +4,6 @@ import FillInTheBlankNotes from './FillInTheBlankNotes';
 import QuestionAnswerNotes from './QuestionAnswerNotes';
 import Sidebar from './Sidebar';
 import PDFViewer from './PdfViewer';
-import { fetchWorksheet } from '@/lib/fetchWorksheet';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 interface ViewWorksheetProps {
@@ -22,7 +21,11 @@ const ViewWorksheet: React.FC<ViewWorksheetProps> = ({ worksheetId, view, setVie
     const fetchAndSetWorksheet = async () => {
       setLoading(true);
       try {
-        const worksheetData = await fetchWorksheet(worksheetId);
+        const response = await fetch(`/api/worksheets/${worksheetId}`);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch worksheet with ID: ${worksheetId}`);
+        }
+        const worksheetData = await response.json();
         setWorksheet(worksheetData);
 
         const numAnswers = worksheetData.questions ? worksheetData.questions.length : worksheetData.sections.reduce((count: number, section) => {
@@ -38,7 +41,7 @@ const ViewWorksheet: React.FC<ViewWorksheetProps> = ({ worksheetId, view, setVie
     };
 
     fetchAndSetWorksheet();
-  }, []);
+  }, [worksheetId]);
 
   if (loading) {
     return (

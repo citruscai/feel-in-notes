@@ -5,7 +5,6 @@ import LevelDescriptions from './LevelDescriptions';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { generatePDF } from '@/lib/worksheetGenerator';
-import { uploadWorksheet, saveWorksheetUrls } from '@/app/api/worksheets/route';
 
 type SelectLevelStepProps = {
   prev: () => void;
@@ -32,7 +31,7 @@ const SelectLevelStep: React.FC<SelectLevelStepProps> = ({ prev }) => {
   const submitData = async () => {
     setIsSubmitting(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notes/upload`, {
+      const response = await fetch('/api/notes/upload', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: formState.notes.text, level: selectedLevel })
@@ -44,9 +43,6 @@ const SelectLevelStep: React.FC<SelectLevelStepProps> = ({ prev }) => {
 
       const jsonResponse = await response.json();
 
-      // Log the entire response to see if there are any issues
-      console.log('Full Response:', jsonResponse);
-
       let parsedText;
       try {
         const sanitizedText = jsonResponse.text
@@ -54,12 +50,9 @@ const SelectLevelStep: React.FC<SelectLevelStepProps> = ({ prev }) => {
           .replace(/\n```$/, '')
           .replace(/\\n/g, '');
         const standardizedText = replaceNonStandardQuotes(sanitizedText);
-        console.log('Sanitized Text:', standardizedText);  // Log sanitized text
         parsedText = JSON.parse(standardizedText);
-        console.log('Parsed Text:', parsedText);  // Log parsed text
       } catch (parseError) {
         console.error('Error parsing text field:', parseError);
-        console.error('Sanitized text:', jsonResponse.text);
         throw new Error('Invalid JSON structure in text field.');
       }
 
@@ -73,9 +66,16 @@ const SelectLevelStep: React.FC<SelectLevelStepProps> = ({ prev }) => {
 
       const guidedNotesUrl = await uploadWorksheet(guidedNotesPdf, `${sanitizedTitle}-guided-notes.pdf`);
       const solutionsUrl = await uploadWorksheet(solutionsPdf, `${sanitizedTitle}-solutions.pdf`);
-      console.log("Guided Notes URL: ", guidedNotesUrl);
-      console.log("Solutions  URL: ", solutionsUrl);
-      await saveWorksheetUrls(jsonResponse.id, guidedNotesUrl, solutionsUrl);
+
+      const saveResponse = await fetch('/api/worksheets/save-urls', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: jsonResponse.id, guidedNotesUrl, solutionsUrl })
+      });
+
+      if (!saveResponse.ok) {
+        throw new Error('Failed to save PDF URLs');
+      }
 
       router.push(`/guidednotes/${jsonResponse.id}`);
     } catch (error) {

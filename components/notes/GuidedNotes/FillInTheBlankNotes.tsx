@@ -1,6 +1,7 @@
 import React, { useContext, useRef, useEffect } from 'react';
 import { NotesContext } from '@/context/NotesContext';
 import { Button } from "@/components/ui/button";
+import { Section } from '@/app/api/types';
 
 const FillInTheBlankNotes: React.FC = () => {
   const context = useContext(NotesContext);
@@ -26,11 +27,10 @@ const FillInTheBlankNotes: React.FC = () => {
   };
 
   useEffect(() => {
-    // Recalculate input widths on initial load
     const inputs = document.querySelectorAll('.dynamic-input');
     inputs.forEach((input, index) => {
       if (input instanceof HTMLInputElement) {
-        const cleanPart = worksheet?.sections?.flatMap(section => section.content.join(' ').split(/(<mark>.*?<\/mark>)/g))
+        const cleanPart = worksheet?.sections?.flatMap((section: Section) => section.content.join(' ').split(/(<mark>.*?<\/mark>)/g))
           .filter(part => part.startsWith('<mark>') && part.endsWith('</mark>'))
           .map(part => part.replace(/<\/?mark>/g, ''))[index];
         if (cleanPart) {

@@ -4,6 +4,10 @@ export type Notes ={
     level:string,
 
 }
+export interface Section {
+    title: string;
+    content: string[];
+  }
 
 export type Worksheet ={
     date: string,

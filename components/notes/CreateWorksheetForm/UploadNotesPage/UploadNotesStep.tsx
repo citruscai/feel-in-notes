@@ -4,7 +4,7 @@ type UploadNotesStep = {
   next: () => void;
 };
 
-const UploadNotesStep: React.FC<NotesUploadPageProps> = ({ next }) => {
+const UploadNotesStep: React.FC<UploadNotesStep> = ({ next }) => {
   return (
     <div>
       <h1 className="text-2xl mb-4 text-primary text-center">Upload Notes</h1>

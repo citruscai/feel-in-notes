@@ -42,6 +42,12 @@ interface SimpleTemplateProps {
   includeAnswers: boolean;
 }
 
+const preprocessText = (text: string, includeAnswers: boolean) => {
+  return includeAnswers
+    ? text.replace(/<mark>(.*?)<\/mark>/g, (_, p1) => p1)
+    : text.replace(/<mark>(.*?)<\/mark>/g, (_, p1) => '_'.repeat(p1.length));
+};
+
 const SimpleTemplate: React.FC<SimpleTemplateProps> = ({ jsonData, includeAnswers }) => (
   <Page style={stylesSimple.page}>
     <Text style={stylesSimple.title}>{jsonData.title || 'Guided Notes'}</Text>
@@ -50,9 +56,7 @@ const SimpleTemplate: React.FC<SimpleTemplateProps> = ({ jsonData, includeAnswer
         <Text style={stylesSimple.subtitle}>{section.title}</Text>
         {section.content?.map((line, contentIndex) => (
           <Text key={contentIndex} style={stylesSimple.content}>
-            {includeAnswers
-              ? line.replace(/<mark>(.*?)<\/mark>/g, (_, p1) => p1)
-              : line.replace(/<mark>(.*?)<\/mark>/g, (_, p1) => '_'.repeat(p1.length))}
+            {preprocessText(line, includeAnswers)}
           </Text>
         ))}
         {section.lists?.map((list, listIndex) => (
@@ -60,9 +64,7 @@ const SimpleTemplate: React.FC<SimpleTemplateProps> = ({ jsonData, includeAnswer
             <Text style={stylesSimple.listTitle}>{list.list_title}</Text>
             {list.items?.map((item, itemIndex) => (
               <Text key={itemIndex} style={stylesSimple.listItem}>
-                {includeAnswers
-                  ? item.replace(/<mark>(.*?)<\/mark>/g, (_, p1) => p1)
-                  : item.replace(/<mark>(.*?)<\/mark>/g, (_, p1) => '_'.repeat(p1.length))}
+                {preprocessText(item, includeAnswers)}
               </Text>
             ))}
           </View>

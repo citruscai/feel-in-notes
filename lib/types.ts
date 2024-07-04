@@ -4,10 +4,7 @@ export type Notes ={
     level:string,
 
 }
-export interface Section {
-    title: string;
-    content: string[];
-  }
+
 
 export type Worksheet ={
     date: string,
@@ -25,5 +22,26 @@ export interface Params {
   export interface QuestionItem {
     question: string;
 
+  }
+  export interface List {
+    list_title: string;
+    items: string[];
+  }
+  
+  export interface Question {
+    question: string;
+    answer: string;
+  }
+  
+  export interface Section {
+    title: string;
+    content: string[];
+    lists?: List[];
+  }
+  
+  export interface JsonData {
+    title?: string;
+    sections?: Section[];
+    questions?: Question[];
   }
   

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
+import { Page, Text, View, Document, StyleSheet, DocumentProps } from '@react-pdf/renderer';
+import { JsonData, Section, List, Question } from '@/lib/types';
 
 const stylesSimple = StyleSheet.create({
   page: {
@@ -36,28 +37,33 @@ const stylesSimple = StyleSheet.create({
   }
 });
 
-const SimpleTemplate = ({ jsonData, includeAnswers }) => (
+export interface SimpleTemplateProps {
+  jsonData: JsonData;
+  includeAnswers: boolean;
+}
+
+const SimpleTemplate: React.FC<SimpleTemplateProps> = ({ jsonData, includeAnswers }) => (
   <Document>
     <Page style={stylesSimple.page}>
       <Text style={stylesSimple.title}>{jsonData.title || 'Guided Notes'}</Text>
-      {jsonData.sections?.map((section, sectionIndex) => (
+      {jsonData.sections?.map((section: Section, sectionIndex: number) => (
         <View key={sectionIndex} style={stylesSimple.section}>
           <Text style={stylesSimple.subtitle}>{section.title}</Text>
-          {section.content?.map((line, contentIndex) => (
+          {section.content?.map((line: string, contentIndex: number) => (
             <Text key={contentIndex} style={stylesSimple.content}>
               {includeAnswers
-                ? line.replace(/<mark>(.*?)<\/mark>/g, (match, p1) => p1)
-                : line.replace(/<mark>(.*?)<\/mark>/g, (match, p1) => '_'.repeat(p1.length))}
+                ? line.replace(/<mark>(.*?)<\/mark>/g, (match: string, p1: string) => p1)
+                : line.replace(/<mark>(.*?)<\/mark>/g, (match: string, p1: string) => '_'.repeat(p1.length))}
             </Text>
           ))}
-          {section.lists?.map((list, listIndex) => (
+          {section.lists?.map((list: List, listIndex: number) => (
             <View key={listIndex}>
               <Text style={stylesSimple.listTitle}>{list.list_title}</Text>
-              {list.items?.map((item, itemIndex) => (
+              {list.items?.map((item: string, itemIndex: number) => (
                 <Text key={itemIndex} style={stylesSimple.listItem}>
                   {includeAnswers
-                    ? item.replace(/<mark>(.*?)<\/mark>/g, (match, p1) => p1)
-                    : item.replace(/<mark>(.*?)<\/mark>/g, (match, p1) => '_'.repeat(p1.length))}
+                    ? item.replace(/<mark>(.*?)<\/mark>/g, (match: string, p1: string) => p1)
+                    : item.replace(/<mark>(.*?)<\/mark>/g, (match: string, p1: string) => '_'.repeat(p1.length))}
                 </Text>
               ))}
             </View>
@@ -67,7 +73,7 @@ const SimpleTemplate = ({ jsonData, includeAnswers }) => (
       {jsonData.questions && (
         <View style={stylesSimple.section}>
           <Text style={stylesSimple.subtitle}>Questions</Text>
-          {jsonData.questions.map((q, index) => (
+          {jsonData.questions.map((q: Question, index: number) => (
             <View key={index}>
               <Text style={stylesSimple.content}>{q.question}</Text>
               {includeAnswers && <Text style={stylesSimple.content} color="red">{q.answer}</Text>}

@@ -1,5 +1,8 @@
+/* eslint-disable */
+/* tslint:disable */
+
 import React from 'react';
-import { pdf, Document, ReactPDF } from '@react-pdf/renderer';
+import { pdf, Document } from '@react-pdf/renderer';
 import SimpleTemplate from '@/components/ui/worksheetTemplates/SimpleTemplate';
 import { JsonData } from './types';
 

@@ -37,54 +37,60 @@ const stylesSimple = StyleSheet.create({
   }
 });
 
-const generatePDF = async (jsonData: JsonData, includeAnswers = false): Promise<Blob> => {
-  const element = (
-    <Document>
-      <Page style={stylesSimple.page}>
-        <Text style={stylesSimple.title}>{jsonData.title || 'Guided Notes'}</Text>
-        {jsonData.sections?.map((section, sectionIndex) => (
-          <View key={sectionIndex} style={stylesSimple.section}>
-            <Text style={stylesSimple.subtitle}>{section.title}</Text>
-            {section.content?.map((line, contentIndex) => (
-              <Text key={contentIndex} style={stylesSimple.content}>
+interface SimpleTemplateProps {
+  jsonData: JsonData;
+  includeAnswers: boolean;
+}
+
+const SimpleTemplate: React.FC<SimpleTemplateProps> = ({ jsonData, includeAnswers }) => (
+  <Page style={stylesSimple.page}>
+    <Text style={stylesSimple.title}>{jsonData.title || 'Guided Notes'}</Text>
+    {jsonData.sections?.map((section, sectionIndex) => (
+      <View key={sectionIndex} style={stylesSimple.section}>
+        <Text style={stylesSimple.subtitle}>{section.title}</Text>
+        {section.content?.map((line, contentIndex) => (
+          <Text key={contentIndex} style={stylesSimple.content}>
+            {includeAnswers
+              ? line.replace(/<mark>(.*?)<\/mark>/g, (_, p1) => p1)
+              : line.replace(/<mark>(.*?)<\/mark>/g, (_, p1) => '_'.repeat(p1.length))}
+          </Text>
+        ))}
+        {section.lists?.map((list, listIndex) => (
+          <View key={listIndex}>
+            <Text style={stylesSimple.listTitle}>{list.list_title}</Text>
+            {list.items?.map((item, itemIndex) => (
+              <Text key={itemIndex} style={stylesSimple.listItem}>
                 {includeAnswers
-                  ? line.replace(/<mark>(.*?)<\/mark>/g, (_, p1) => p1)
-                  : line.replace(/<mark>(.*?)<\/mark>/g, (_, p1) => '_'.repeat(p1.length))}
+                  ? item.replace(/<mark>(.*?)<\/mark>/g, (_, p1) => p1)
+                  : item.replace(/<mark>(.*?)<\/mark>/g, (_, p1) => '_'.repeat(p1.length))}
               </Text>
-            ))}
-            {section.lists?.map((list, listIndex) => (
-              <View key={listIndex}>
-                <Text style={stylesSimple.listTitle}>{list.list_title}</Text>
-                {list.items?.map((item, itemIndex) => (
-                  <Text key={itemIndex} style={stylesSimple.listItem}>
-                    {includeAnswers
-                      ? item.replace(/<mark>(.*?)<\/mark>/g, (_, p1) => p1)
-                      : item.replace(/<mark>(.*?)<\/mark>/g, (_, p1) => '_'.repeat(p1.length))}
-                  </Text>
-                ))}
-              </View>
             ))}
           </View>
         ))}
-        {jsonData.questions && (
-          <View style={stylesSimple.section}>
-            <Text style={stylesSimple.subtitle}>Questions</Text>
-            {jsonData.questions.map((q, index) => (
-              <View key={index}>
-                <Text style={stylesSimple.content}>{q.question}</Text>
-                {includeAnswers && <Text style={stylesSimple.content} color="red">{q.answer}</Text>}
-              </View>
-            ))}
+      </View>
+    ))}
+    {jsonData.questions && (
+      <View style={stylesSimple.section}>
+        <Text style={stylesSimple.subtitle}>Questions</Text>
+        {jsonData.questions.map((q, index) => (
+          <View key={index}>
+            <Text style={stylesSimple.content}>{q.question}</Text>
+            {includeAnswers && <Text style={stylesSimple.content} color="red">{q.answer}</Text>}
           </View>
-        )}
-      </Page>
+        ))}
+      </View>
+    )}
+  </Page>
+);
+
+export const generatePDF = async (jsonData: JsonData, level: string, includeAnswers = false): Promise<Blob> => {
+  const element = (
+    <Document>
+      <SimpleTemplate jsonData={jsonData} includeAnswers={includeAnswers} />
     </Document>
   );
-
   const pdfDoc = pdf();
   pdfDoc.updateContainer(element);
   const blob = await pdfDoc.toBlob();
   return blob;
 };
-
-export { generatePDF };

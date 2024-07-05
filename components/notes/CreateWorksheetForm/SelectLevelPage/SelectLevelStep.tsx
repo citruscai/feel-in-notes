@@ -28,23 +28,24 @@ const SelectLevelStep: React.FC<SelectLevelStepProps> = ({ prev }) => {
     return text.replace(/‘/g, "'").replace(/’/g, "'");
   };
 
+
   const uploadWorksheet = async (pdf: Blob, fileName: string): Promise<string> => {
     const formData = new FormData();
     formData.append('file', pdf, fileName);
-    
-    const response = await fetch('/api/worksheets/upload', {
+  
+    const response = await fetch('/api/worksheets/upload', { 
       method: 'POST',
       body: formData,
     });
-
+  
     if (!response.ok) {
       throw new Error(`Failed to upload PDF: ${response.statusText}`);
     }
-
+  
     const data = await response.json();
     return data.file_url;
   };
-
+  
   const submitData = async () => {
     setIsSubmitting(true);
     try {
@@ -53,13 +54,13 @@ const SelectLevelStep: React.FC<SelectLevelStepProps> = ({ prev }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: formState.notes.text, level: selectedLevel })
       });
-
+  
       if (!response.ok) {
         throw new Error(`Failed to upload notes: ${response.statusText}`);
       }
-
+  
       const jsonResponse = await response.json();
-
+  
       let parsedText;
       try {
         const sanitizedText = jsonResponse.text
@@ -72,28 +73,27 @@ const SelectLevelStep: React.FC<SelectLevelStepProps> = ({ prev }) => {
         console.error('Error parsing text field:', parseError);
         throw new Error('Invalid JSON structure in text field.');
       }
-
-      // Always generate PDF using the simple template
+  
       const guidedNotesPdf = await generatePDF(parsedText, jsonResponse.level);
       const solutionsPdf = await generatePDF(parsedText, jsonResponse.level, true);
-
+  
       const sanitizedTitle = parsedText.title
         ? parsedText.title.replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').toLowerCase()
         : 'guided-notes';
-
+  
       const guidedNotesUrl = await uploadWorksheet(guidedNotesPdf, `${sanitizedTitle}-guided-notes.pdf`);
       const solutionsUrl = await uploadWorksheet(solutionsPdf, `${sanitizedTitle}-solutions.pdf`);
-
+  
       const saveResponse = await fetch('/api/worksheets/save-urls', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: jsonResponse.id, guidedNotesUrl, solutionsUrl })
       });
-
+  
       if (!saveResponse.ok) {
         throw new Error('Failed to save PDF URLs');
       }
-
+  
       router.push(`/guidednotes/${jsonResponse.id}`);
     } catch (error) {
       if (error instanceof Error) {
@@ -103,7 +103,7 @@ const SelectLevelStep: React.FC<SelectLevelStepProps> = ({ prev }) => {
       setIsSubmitting(false);
     }
   };
-
+  
   return (
     <div className="flex flex-col space-y-4 theme-custom">
       <h1 className="text-2xl mb-4 text-primary">Select Level</h1>

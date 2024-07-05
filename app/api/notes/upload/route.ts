@@ -1,27 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-
 export async function POST(req: NextRequest) {
   try {
-    const formData = await req.formData();
-    const pdfBlob = formData.get('file') as Blob;
-    const fileName = formData.get('fileName') as string;
+    const { text, level } = await req.json();
 
-    console.log('Uploading PDF:', fileName);
+    if (!text) {
+      throw new Error('No text provided');
+    }
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/worksheets/upload`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notes/upload`, {
       method: 'POST',
-      body: formData,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ text, level })
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to upload PDF: ${response.statusText}`);
+      throw new Error(`Failed to upload notes: ${response.statusText}`);
     }
 
     const data = await response.json();
-    return NextResponse.json({ file_url: data.file_url });
+    return NextResponse.json(data);
   } catch (error) {
-    console.error('Error uploading PDF:', error);
+    console.error('Error uploading notes:', error);
     return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
   }
 }

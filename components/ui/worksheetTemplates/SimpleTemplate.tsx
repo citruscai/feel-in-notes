@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, Text, View, Document, StyleSheet, DocumentProps } from '@react-pdf/renderer';
+import { Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import { JsonData, Section, List, Question } from '@/lib/types';
 
 const stylesSimple = StyleSheet.create({
@@ -43,7 +43,7 @@ export interface SimpleTemplateProps {
 }
 
 const SimpleTemplate: React.FC<SimpleTemplateProps> = ({ jsonData, includeAnswers }) => (
-  <Document>
+  <>
     <Page style={stylesSimple.page}>
       <Text style={stylesSimple.title}>{jsonData.title || 'Guided Notes'}</Text>
       {jsonData.sections?.map((section: Section, sectionIndex: number) => (
@@ -82,7 +82,7 @@ const SimpleTemplate: React.FC<SimpleTemplateProps> = ({ jsonData, includeAnswer
         </View>
       )}
     </Page>
-  </Document>
+  </>
 );
 
 export default SimpleTemplate;

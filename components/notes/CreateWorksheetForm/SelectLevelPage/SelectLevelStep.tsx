@@ -4,7 +4,7 @@ import LevelChoices from './LevelChoices';
 import LevelDescriptions from './LevelDescriptions';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { generatePDF } from '@/components/worksheetGenerator';
+import { generatePDF } from '@/lib/worksheetGenerator';
 
 type SelectLevelStepProps = {
   prev: () => void;

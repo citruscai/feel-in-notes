@@ -1,8 +1,32 @@
-node_modules
-.venv
-__pycache__
-*.pyc
-*.log
-*.tmp
-.DS_Store
+# Ignore build folders
 .next
+dist
+
+# Ignore node_modules folder
+node_modules
+
+# Ignore virtual environment
+api/venv
+
+# Ignore other unwanted files and folders
+*.log
+*.cache
+*.tmp
+*.swp
+*.lock
+*.bak
+*.pyc
+*.pyo
+__pycache__
+.DS_Store
+Thumbs.db
+
+# Ignore temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Ignore project-specific files
+docs/
+*.md

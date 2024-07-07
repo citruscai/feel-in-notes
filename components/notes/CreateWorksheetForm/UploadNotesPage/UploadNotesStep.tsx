@@ -7,7 +7,7 @@ type UploadNotesStep = {
 const UploadNotesStep: React.FC<UploadNotesStep> = ({ next }) => {
   return (
     <div>
-      <h1 className="text-2xl mb-4 text-primary text-center">Upload Notes</h1>
+      <h1 className="text-2xl mb-4 text-primary text-center">Upload Resource to transform</h1>
       <NotesUploadBox onUploadSuccess={next} />
     </div>
   );

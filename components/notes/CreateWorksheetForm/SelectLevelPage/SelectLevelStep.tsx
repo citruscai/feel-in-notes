@@ -5,6 +5,7 @@ import LevelDescriptions from './LevelDescriptions';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { generatePDF } from '@/lib/worksheetGenerator';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 type SelectLevelStepProps = {
   prev: () => void;
@@ -28,24 +29,23 @@ const SelectLevelStep: React.FC<SelectLevelStepProps> = ({ prev }) => {
     return text.replace(/‘/g, "'").replace(/’/g, "'");
   };
 
-
   const uploadWorksheet = async (pdf: Blob, fileName: string): Promise<string> => {
     const formData = new FormData();
     formData.append('file', pdf, fileName);
-  
-    const response = await fetch('/api/worksheets/upload', { 
+
+    const response = await fetch('/api/worksheets/upload', {
       method: 'POST',
       body: formData,
     });
-  
+
     if (!response.ok) {
       throw new Error(`Failed to upload PDF: ${response.statusText}`);
     }
-  
+
     const data = await response.json();
     return data.file_url;
   };
-  
+
   const submitData = async () => {
     setIsSubmitting(true);
     try {
@@ -54,13 +54,13 @@ const SelectLevelStep: React.FC<SelectLevelStepProps> = ({ prev }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: formState.notes.text, level: selectedLevel })
       });
-  
+
       if (!response.ok) {
         throw new Error(`Failed to upload notes: ${response.statusText}`);
       }
-  
+
       const jsonResponse = await response.json();
-  
+
       let parsedText;
       try {
         const sanitizedText = jsonResponse.text
@@ -73,27 +73,27 @@ const SelectLevelStep: React.FC<SelectLevelStepProps> = ({ prev }) => {
         console.error('Error parsing text field:', parseError);
         throw new Error('Invalid JSON structure in text field.');
       }
-  
+
       const guidedNotesPdf = await generatePDF(parsedText, jsonResponse.level);
       const solutionsPdf = await generatePDF(parsedText, jsonResponse.level, true);
-  
+
       const sanitizedTitle = parsedText.title
         ? parsedText.title.replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').toLowerCase()
         : 'guided-notes';
-  
+
       const guidedNotesUrl = await uploadWorksheet(guidedNotesPdf, `${sanitizedTitle}-guided-notes.pdf`);
       const solutionsUrl = await uploadWorksheet(solutionsPdf, `${sanitizedTitle}-solutions.pdf`);
-  
+
       const saveResponse = await fetch('/api/worksheets/save-urls', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: jsonResponse.id, guidedNotesUrl, solutionsUrl })
       });
-  
+
       if (!saveResponse.ok) {
         throw new Error('Failed to save PDF URLs');
       }
-  
+
       router.push(`/guidednotes/${jsonResponse.id}`);
     } catch (error) {
       if (error instanceof Error) {
@@ -103,30 +103,39 @@ const SelectLevelStep: React.FC<SelectLevelStepProps> = ({ prev }) => {
       setIsSubmitting(false);
     }
   };
-  
+
   return (
-    <div className="flex flex-col space-y-4 theme-custom">
-      <h1 className="text-2xl mb-4 text-primary">Select Level</h1>
-      <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
-        <div className="flex-1">
-          <LevelChoices selectedLevel={selectedLevel} onChange={handleLevelChange} />
+    <div className="relative">
+      {isSubmitting && (
+        <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
+          <LoadingSpinner />
         </div>
-        <div className="flex-1">
+      )}
+      <div className="grid grid-cols-[1fr_300px] gap-8 w-full max-w-6xl mx-auto py-12 px-4 md:px-6">
+        <div className="flex flex-col justify-between h-full">
+          <div>
+            <h1 className="text-4xl font-bold mb-6">Select a level</h1>
+            <div className="grid gap-4">
+              <LevelChoices selectedLevel={selectedLevel} onChange={handleLevelChange} />
+            </div>
+          </div>
+          <div className="w-full mt-4 flex justify-between space-x-2">
+            <Button onClick={prev} variant="default" className="mr-2">
+              Back
+            </Button>
+            <Button
+              onClick={submitData}
+              disabled={isSubmitting}
+              variant="default"
+              className={`${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              {isSubmitting ? 'Submitting...' : 'Submit'}
+            </Button>
+          </div>
+        </div>
+        {selectedLevel && (
           <LevelDescriptions level={selectedLevel} />
-        </div>
-      </div>
-      <div className="w-full mt-4 flex justify-between space-x-2">
-        <Button onClick={prev} variant="default" className="mr-2">
-          Back
-        </Button>
-        <Button
-          onClick={submitData}
-          disabled={isSubmitting}
-          variant="default"
-          className={`${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
-        >
-          {isSubmitting ? 'Submitting...' : 'Submit'}
-        </Button>
+        )}
       </div>
     </div>
   );

@@ -7,25 +7,28 @@ type LevelChoicesProps = {
 };
 
 const LevelChoices: React.FC<LevelChoicesProps> = ({ selectedLevel, onChange }) => {
+  const options = [
+    { value: 'moderate', label: 'Moderate Support' },
+    { value: 'high', label: 'High Support' },
+    { value: 'questions', label: 'Questions' }
+  ];
+
   return (
-    <RadioGroup
-      defaultValue={selectedLevel}
-      onValueChange={onChange}
-      className="mb-4 theme-custom p-4 border border-border rounded-lg bg-background"
-    >
-      <div className="flex items-center space-x-2">
-        <RadioGroupItem value="moderate" id="r1" />
-        <Label htmlFor="r1" className="">Moderate Support</Label>
-      </div>
-      <div className="flex items-center space-x-2">
-        <RadioGroupItem value="high" id="r2" />
-        <Label htmlFor="r2" className="">High Support</Label>
-      </div>
-      <div className="flex items-center space-x-2">
-        <RadioGroupItem value="questions" id="r3" />
-        <Label htmlFor="r3" className="">Questions</Label>
-      </div>
-    </RadioGroup>
+    <div className="grid gap-4">
+      {options.map((option) => (
+        <div
+          key={option.value}
+          className={`p-4 rounded-lg border transition-colors cursor-pointer ${
+            selectedLevel === option.value
+              ? 'bg-primary text-primary-foreground border-primary'
+              : 'hover:bg-muted'
+          }`}
+          onClick={() => onChange(option.value)}
+        >
+          <h3 className="text-xl font-semibold">{option.label}</h3>
+        </div>
+      ))}
+    </div>
   );
 };
 

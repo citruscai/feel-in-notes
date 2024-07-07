@@ -88,7 +88,7 @@ const NotesUploadBox: React.FC<NotesUploadBoxProps> = ({ onUploadSuccess }) => {
         dropzoneOptions={dropZoneConfig}
         className="relative bg-background rounded-lg p-4 border border-border theme-custom"
       >
-        <FileInput className="outline-dashed outline-1 outline-border text-foreground">
+        <FileInput className=" outline-1 outline-border text-foreground">
           <div className="flex items-center justify-center flex-col pt-3 pb-4 w-full">
             <img src="/file-upload-icon.svg" alt="File upload icon" width={40} height={32} />
             <p className="mb-1 text-sm text-muted-foreground">

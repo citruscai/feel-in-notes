@@ -4,7 +4,6 @@ import os
 import re
 import nltk
 from nltk.tokenize import word_tokenize
-from keybert import KeyBERT
 from summarizer import Summarizer
 import google.generativeai as gemini
 from dotenv import load_dotenv
@@ -23,20 +22,6 @@ def extract_important_sentences(text, summary_ratio=0.8):
     model = Summarizer()
     summary = model(text, ratio=summary_ratio)
     return summary.split(',')
-
-def extract_important_words(text):
-    """Extract key words using the KeyBERT model."""
-    model = KeyBERT()
-    keywords = model.extract_keywords(text, stop_words='english')
-    return {normalize_text(word) for word, _ in keywords}
-
-def mark_important_words(text, important_words):
-    """Mark important words in the text with HTML <mark> tags."""
-    words = word_tokenize(text)
-    return ' '.join(
-        f'<mark>{word}</mark>' if normalize_text(word) in important_words else word
-        for word in words
-    )
 
 def mark_important_sentences(full_text, important_sentences):
     """Extract and mark key important sentences."""
@@ -148,11 +133,7 @@ def structure_questions(text):
 def process_text(text, level="questions"):
     """Process text based on specified level of support."""
     normalized_text = normalize_text(text)
-    if level == "high":
-        important_words = extract_important_words(normalized_text)
-        processed_text = mark_important_words(text, important_words)
-        print(processed_text)
-    elif level == "moderate":
+    if level == "blanks":
         important_sentences = extract_important_sentences(normalized_text)
         processed_text = mark_important_sentences(normalized_text, important_sentences)
         print(processed_text)

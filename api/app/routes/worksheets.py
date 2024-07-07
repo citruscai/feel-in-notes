@@ -91,7 +91,7 @@ def save_urls():
         solutions_url = data["solutionsUrl"]
 
         try:
-            uuid_obj = uuid.UUID(worksheet_id)
+            uuid.UUID(worksheet_id)
         except ValueError as e:
             return jsonify({"error": f"Invalid UUID: {str(e)}"}), 400
 

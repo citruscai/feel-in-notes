@@ -38,3 +38,6 @@ next-env.d.ts
 __pycache__
 docs/.project_structure_ignore
 docs/project_structure.txt
+
+/venv
+api/venv/*

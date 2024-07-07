@@ -1,12 +1,14 @@
-from flask import Blueprint, request, jsonify
-import boto3
+"""Routes for handling worksheet-related operations."""
+
 import os
 import tempfile
-from werkzeug.utils import secure_filename
-from bson import json_util, ObjectId
-from app.db import get_worksheets_collection
-from dotenv import load_dotenv
 import uuid
+from flask import Blueprint, request, jsonify
+import boto3
+from werkzeug.utils import secure_filename
+from bson import json_util
+from ..db import get_worksheets_collection
+from dotenv import load_dotenv
 
 load_dotenv()
 worksheets_bp = Blueprint("worksheets", __name__)
@@ -19,9 +21,9 @@ s3_client = boto3.client(
 
 BUCKET_NAME = os.getenv("AWS_BUCKET_NAME")
 
-
 @worksheets_bp.route("/upload", methods=["POST"])
 def upload_worksheet():
+    """Handle uploading a worksheet file to S3 and return the file URL."""
     try:
         print("Starting upload worksheet process...")
 
@@ -35,56 +37,53 @@ def upload_worksheet():
             print("No selected file")
             return jsonify({"error": "No selected file"}), 400
 
-        if file:
-            print(f"Received file: {file}")
-            filename = secure_filename(file.filename)
-            print(f"Filename: {filename}")
-            print(f"Content-Type: {file.content_type}")
-
-            content_length = len(file.read())
-            print(f"File content length: {content_length}")
-
-            file.seek(0)
-
-            if content_length == 0:
-                print("File is empty")
-                return jsonify({"error": "File is empty"}), 400
-
-            sanitized_filename = secure_filename(file.filename)
-            print(f"Sanitized filename: {sanitized_filename}")
-
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
-                temp_file.write(file.read())
-                temp_file_path = temp_file.name
-
-            print(f"File saved temporarily to {temp_file_path}")
-
-            try:
-                s3_client.upload_file(temp_file_path, BUCKET_NAME, sanitized_filename)
-                file_url = (
-                    f"https://{BUCKET_NAME}.s3.amazonaws.com/{sanitized_filename}"
-                )
-                print(f"File uploaded successfully to: {file_url}")
-            except Exception as e:
-                print(f"Error uploading file to S3: {e}")
-                return jsonify({"error": f"Error uploading file to S3: {e}"}), 500
-            finally:
-
-                os.remove(temp_file_path)
-                print(f"Temporary file {temp_file_path} removed")
-
-            return jsonify({"file_url": file_url}), 200
-        else:
+        if not file:
             print("Invalid file")
             return jsonify({"error": "Invalid file"}), 400
+
+        print(f"Received file: {file}")
+        filename = secure_filename(file.filename)
+        print(f"Filename: {filename}")
+        print(f"Content-Type: {file.content_type}")
+
+        content_length = len(file.read())
+        print(f"File content length: {content_length}")
+
+        file.seek(0)
+
+        if content_length == 0:
+            print("File is empty")
+            return jsonify({"error": "File is empty"}), 400
+
+        sanitized_filename = secure_filename(file.filename)
+        print(f"Sanitized filename: {sanitized_filename}")
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
+            temp_file.write(file.read())
+            temp_file_path = temp_file.name
+
+        print(f"File saved temporarily to {temp_file_path}")
+
+        try:
+            s3_client.upload_file(temp_file_path, BUCKET_NAME, sanitized_filename)
+            file_url = f"https://{BUCKET_NAME}.s3.amazonaws.com/{sanitized_filename}"
+            print(f"File uploaded successfully to: {file_url}")
+        except boto3.exceptions.S3UploadFailedError as e:
+            print(f"Error uploading file to S3: {e}")
+            return jsonify({"error": f"Error uploading file to S3: {e}"}), 500
+        finally:
+            os.remove(temp_file_path)
+            print(f"Temporary file {temp_file_path} removed")
+
+        return jsonify({"file_url": file_url}), 200
+
     except Exception as e:
         print(f"Error during file upload: {e}")
         return jsonify({"error": str(e)}), 500
 
-
-# saving s3 urls into the worksheet schema
 @worksheets_bp.route("/save-urls", methods=["PUT"])
 def save_urls():
+    """Save URLs for guided notes and solutions to the worksheet document."""
     try:
         data = request.json
         worksheet_id = data["id"]
@@ -116,18 +115,20 @@ def save_urls():
 
 @worksheets_bp.route("/<worksheet_id>", methods=["GET"])
 def get_worksheet(worksheet_id):
+    """Retrieve the worksheet with the given ID."""
     try:
         worksheets = get_worksheets_collection()
         worksheet = worksheets.find_one({"id": worksheet_id})
         if not worksheet:
             return jsonify({"error": "Worksheet not found"}), 404
-        
+
         return json_util.dumps(worksheet), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 @worksheets_bp.route("/<worksheet_id>/urls", methods=["GET"])
 def get_urls(worksheet_id):
+    """Retrieve URLs for guided notes and solutions of a worksheet."""
     try:
         worksheets = get_worksheets_collection()
         worksheet = worksheets.find_one({"id": worksheet_id})
@@ -137,11 +138,6 @@ def get_urls(worksheet_id):
         guided_notes_url = worksheet.get("guided_notes_url", "")
         solutions_url = worksheet.get("solutions_url", "")
 
-        return (
-            jsonify(
-                {"guidedNotesUrl": guided_notes_url, "solutionsUrl": solutions_url}
-            ),
-            200,
-        )
+        return jsonify({"guidedNotesUrl": guided_notes_url, "solutionsUrl": solutions_url}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500

@@ -1,17 +1,33 @@
+"""Database initialization and collection retrieval for the Flask app."""
+
 from pymongo import MongoClient
 
-
-client = None
-db = None
+CLIENT = None
+DB = None
 
 def init_db(app):
-    global client, db
+    """Initialize the MongoDB client and database.
+
+    Args:
+        app (Flask): The Flask application instance.
+    """
+    global CLIENT, DB
     mongo_uri = app.config.get('MONGO_URI')
-    client = MongoClient(mongo_uri,uuidRepresentation='standard')
-    db = client.db  
+    CLIENT = MongoClient(mongo_uri, uuidRepresentation='standard')
+    DB = CLIENT.db
 
 def get_notes_collection():
-    return db.notes 
+    """Retrieve the notes collection from the database.
+
+    Returns:
+        Collection: The notes collection.
+    """
+    return DB.notes
 
 def get_worksheets_collection():
-    return db.worksheets 
+    """Retrieve the worksheets collection from the database.
+
+    Returns:
+        Collection: The worksheets collection.
+    """
+    return DB.worksheets

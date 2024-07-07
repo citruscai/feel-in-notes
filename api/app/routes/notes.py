@@ -3,7 +3,6 @@
 import uuid
 from datetime import datetime
 from flask import Blueprint, request, jsonify
-from bson import ObjectId
 from ..utils.process_notes import process_text
 from ..db import get_notes_collection, get_worksheets_collection
 

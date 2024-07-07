@@ -1,5 +1,4 @@
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import React, { memo, useCallback } from 'react';
 
 type LevelChoicesProps = {
   selectedLevel: string;
@@ -8,10 +7,13 @@ type LevelChoicesProps = {
 
 const LevelChoices: React.FC<LevelChoicesProps> = ({ selectedLevel, onChange }) => {
   const options = [
-    { value: 'moderate', label: 'Moderate Support' },
-    { value: 'high', label: 'High Support' },
-    { value: 'questions', label: 'Questions' }
+    { value: 'blanks', label: 'Fill in the Blank Notes', description: 'Generate notes with blank spaces for key concepts, allowing you to actively engage with the material.' },
+    { value: 'questions', label: 'Question Based Notes', description: 'Create notes in a question-and-answer format to test your understanding and retention of the material.' }
   ];
+
+  const handleClick = useCallback((value: string) => {
+    onChange(value);
+  }, [onChange]);
 
   return (
     <div className="grid gap-4">
@@ -23,13 +25,14 @@ const LevelChoices: React.FC<LevelChoicesProps> = ({ selectedLevel, onChange }) 
               ? 'bg-primary text-primary-foreground border-primary'
               : 'hover:bg-muted'
           }`}
-          onClick={() => onChange(option.value)}
+          onClick={() => handleClick(option.value)}
         >
           <h3 className="text-xl font-semibold">{option.label}</h3>
+          <p className="text-muted-foreground">{option.description}</p>
         </div>
       ))}
     </div>
   );
 };
 
-export default LevelChoices;
+export default memo(LevelChoices);

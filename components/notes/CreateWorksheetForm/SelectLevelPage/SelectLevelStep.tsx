@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useCreateWorksheetContext } from '@/context/CreateWorksheetConext';
 import LevelChoices from './LevelChoices';
 import LevelDescriptions from './LevelDescriptions';
@@ -17,13 +17,13 @@ const SelectLevelStep: React.FC<SelectLevelStepProps> = ({ prev }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
-  const handleLevelChange = (value: string) => {
+  const handleLevelChange = useCallback((value: string) => {
     setFormState((prev) => ({
       ...prev,
       notes: { ...prev.notes, level: value },
     }));
     setSelectedLevel(value);
-  };
+  }, [setFormState]);
 
   const replaceNonStandardQuotes = (text: string) => {
     return text.replace(/‘/g, "'").replace(/’/g, "'");
@@ -111,6 +111,7 @@ const SelectLevelStep: React.FC<SelectLevelStepProps> = ({ prev }) => {
           <LoadingSpinner />
         </div>
       )}
+
       <div className="grid grid-cols-[1fr_300px] gap-8 w-full max-w-6xl mx-auto py-12 px-4 md:px-6">
         <div className="flex flex-col justify-between h-full">
           <div>

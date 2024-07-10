@@ -1,11 +1,6 @@
-"use client"
-import { createContext, useContext, useState, ReactNode, FC } from 'react';
-import { Notes, Worksheet } from '@/lib/types';
-
-type FormState = {
-  notes: Notes;
-  worksheet: Worksheet;
-};
+"use client";
+import React, { createContext, useContext, useState, ReactNode, FC } from 'react';
+import { FormState, Notes, Worksheet } from '@/lib/interfaces';
 
 const defaultNotes: Notes = { text: '', id: '', level: '' };
 const defaultWorksheet: Worksheet = { date: '', id: '', text: '', level: '' };

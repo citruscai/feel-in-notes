@@ -43,8 +43,8 @@ I created this web application to finally solve this problem!
  - react-pdf
  - keyBERT
 ### Testing
--pytest
--Jest
+- pytest
+- Jest
 
 
 

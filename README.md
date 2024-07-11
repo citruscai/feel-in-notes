@@ -1,11 +1,11 @@
 <p align="center">
   <a href="https://nextjs-flask-starter.vercel.app/">
-    <img src="https://assets.vercel.com/image/upload/v1588805858/repositories/vercel/logo.png" height="96">
-    <h3 align="center">Next.js Flask Starter</h3>
+    <img src="https://i.ibb.co/Y2LckdC/1.png" height="200">
+    <h3 align="center">:pencil2: Feel In Notes :page_with_curl: </h3>
   </a>
 </p>
 
-<p align="center">Simple Next.js boilerplate that uses <a href="https://flask.palletsprojects.com/">Flask</a> as the API backend.</p>
+<p align="center">Creating guided notes with Natural Language Processing and Artificial Intelligence </p>
 
 <br/>
 

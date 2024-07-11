@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://nextjs-flask-starter.vercel.app/">
+  
     <img src="https://i.ibb.co/Y2LckdC/1.png" height="200">
     <h3 align="center">:pencil2: Feel In Notes :page_with_curl: </h3>
   </a>
@@ -11,39 +11,51 @@
 
 ## Introduction
 
-This is a hybrid Next.js + Python app that uses Next.js as the frontend and Flask as the API backend. One great use case of this is to write Next.js apps that use Python AI libraries on the backend.
+Feel-In-Notes is a web application designed to assist both educators and learners in easily creating guided notes worksheets to understand a resource. This application can generate fill-in-the-blank notes or worksheets with questions from resources such as PowerPoint slides, articles, YouTube links, or given text.
 
-## How It Works
+As a student with ADHD, taking notes for my classes could be a very stressful process. During grade school, I had teachers hand out fill-in-the-blank notes, and they were instrumental in keeping me engaged in the lesson and retaining important information, which helped me score high on tests. Once I entered college, I was left on my own and struggled with taking notes. Despite trying every tip possible, I still found it challenging. I remembered how much guided notes helped me in the past and tried to find a way to create them for my college classes, but was saddened to see that there wasn't a non-tedious option available. Even educators were complaining about how tedious creating guided notes were despite their immense help in the classroom.
 
-The Python/Flask server is mapped into to Next.js app under `/api/`.
+I created this web application to finally solve this problem!
+## Features
 
-This is implemented using [`next.config.js` rewrites](https://github.com/vercel/examples/blob/main/python/nextjs-flask/next.config.js) to map any request to `/api/:path*` to the Flask API, which is hosted in the `/api` folder.
+- **Guided Notes Creation**: Generate fill-in-the-blank notes and question-based notes from various resources such as PowerPoint slides, articles, YouTube links, and given text.
+- **Interactive Notes**: Use an interactive version of the notes directly within the application, allowing students to fill in blanks and answer questions in real-time.
+- **Progress Saving**: Save your progress on interactive notes, making it easy to pick up where you left off at any time.
+- **Multiple Input Formats**: Support for uploading documents, pasting YouTube links, and inputting text directly to generate notes.
+- **Accessible**: Designed to be user-friendly for students with ADHD and other learning disabilities.
 
-On localhost, the rewrite will be made to the `127.0.0.1:5328` port, which is where the Flask server is running.
+## Technologies Used 
+ ### Frontend 
+  - Next.js
+  -  React
+  - TailwindCSS 
+  - Shadcn UI
 
-In production, the Flask server is hosted as [Python serverless functions](https://vercel.com/docs/concepts/functions/serverless-functions/runtimes/python) on Vercel.
+ ### Backend
+ - Flask
+ - MongoDB Atlas
+ - Amazon S3
+ - Google Gemini
 
-## Demo
+### Other Tools
+ - office-text-extractor
+ - youtube-transcript
+ - react-pdf
+ - keyBERT
+### Testing
+-pytest
+-Jest
 
-https://nextjs-flask-starter.vercel.app/
 
-## Deploy Your Own
 
-You can clone & deploy it to Vercel with one click:
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?demo-title=Next.js%20Flask%20Starter&demo-description=Simple%20Next.js%20boilerplate%20that%20uses%20Flask%20as%20the%20API%20backend.&demo-url=https%3A%2F%2Fnextjs-flask-starter.vercel.app%2F&demo-image=%2F%2Fimages.ctfassets.net%2Fe5382hct74si%2F795TzKM3irWu6KBCUPpPz%2F44e0c6622097b1eea9b48f732bf75d08%2FCleanShot_2023-05-23_at_12.02.15.png&project-name=Next.js%20Flask%20Starter&repository-name=nextjs-flask-starter&repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fexamples%2Ftree%2Fmain%2Fpython%2Fnextjs-flask&from=vercel-examples-repo)
 
-## Developing Locally
-
-You can clone & create this repo with the following command
-
-```bash
-npx create-next-app nextjs-flask --example "https://github.com/vercel/examples/tree/main/python/nextjs-flask"
-```
 
 ## Getting Started
 
-First, install the dependencies:
+
+1. First, clone the project:
+2. install dependencies
 
 ```bash
 npm install
@@ -53,7 +65,7 @@ yarn
 pnpm install
 ```
 
-Then, run the development server:
+3. run the development servers, the flask side is set up to run concurrently and will install any dependencies needed for the flask side when you run this command:
 
 ```bash
 npm run dev
@@ -65,14 +77,7 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-The Flask server will be running on [http://127.0.0.1:5328](http://127.0.0.1:5328) – feel free to change the port in `package.json` (you'll also need to update it in `next.config.js`).
+The Flask server will be running on [http://127.0.0.1:5328](http://127.0.0.1:5328) – feel free to change the port in `package.json` (you'll also need to update it in `next.config.js`).'
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [Flask Documentation](https://flask.palletsprojects.com/en/1.1.x/) - learn about Flask features and API.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Contact 
+Contact me at cairo@feelinnotes.com for any questions or help and feel free to add to the issues tab if you spot any! 

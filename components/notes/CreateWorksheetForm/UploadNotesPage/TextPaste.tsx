@@ -1,3 +1,4 @@
+"use client"
 import React, { useState } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -5,13 +6,15 @@ import { useCreateWorksheetContext } from '@/context/CreateWorksheetConext';
 
 interface TextPasteProps {
   onTextSubmit: () => void;
+  startLoading: () => void;
 }
 
-const TextPaste: React.FC<TextPasteProps> = ({ onTextSubmit }) => {
+const TextPaste: React.FC<TextPasteProps> = ({ onTextSubmit, startLoading }) => {
   const [text, setText] = useState('');
   const { setFormState } = useCreateWorksheetContext();
 
   const handleSubmit = () => {
+    startLoading();
     setFormState((prev) => ({
       ...prev,
       notes: { ...prev.notes, text },

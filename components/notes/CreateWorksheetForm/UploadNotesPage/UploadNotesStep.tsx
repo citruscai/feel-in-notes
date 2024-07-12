@@ -9,20 +9,25 @@ import IconYoutube from '@/components/ui/icons/IconYoutube';
 
 interface UploadNotesStepProps {
   next: () => void;
+  startLoading: () => void;
+  stopLoading: () => void;
 }
 
-const UploadNotesStep: React.FC<UploadNotesStepProps> = ({ next }) => {
+const UploadNotesStep: React.FC<UploadNotesStepProps> = ({ next, startLoading, stopLoading }) => {
   const [activeTab, setActiveTab] = useState('upload');
 
   const handleUploadSuccess = () => {
+    stopLoading();
     next();
   };
 
   const handleLinkSubmit = () => {
+    stopLoading();
     next();
   };
 
   const handleTextSubmit = () => {
+    stopLoading();
     next();
   };
 
@@ -30,9 +35,9 @@ const UploadNotesStep: React.FC<UploadNotesStepProps> = ({ next }) => {
     <div className="flex h-screen w-full items-center justify-center bg-background">
       <div className="mx-8 flex w-full max-w-5xl flex-col rounded-2xl bg-card p-8 shadow-2xl md:flex-row">
         <div className="relative flex flex-1 flex-col items-center justify-center gap-6 rounded-2xl bg-muted p-8 text-center">
-          {activeTab === 'upload' && <NotesUploadBox onUploadSuccess={handleUploadSuccess} />}
-          {activeTab === 'youtube' && <YoutubeLink onLinkSubmit={handleLinkSubmit} />}
-          {activeTab === 'text' && <TextPaste onTextSubmit={handleTextSubmit} />}
+          {activeTab === 'upload' && <NotesUploadBox onUploadSuccess={handleUploadSuccess} startLoading={startLoading} />}
+          {activeTab === 'youtube' && <YoutubeLink onLinkSubmit={handleLinkSubmit} startLoading={startLoading} />}
+          {activeTab === 'text' && <TextPaste onTextSubmit={handleTextSubmit} startLoading={startLoading} />}
         </div>
         <div className="flex flex-col items-center justify-center gap-6 p-8">
           <Button

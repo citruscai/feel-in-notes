@@ -9,9 +9,11 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 type SelectLevelStepProps = {
   prev: () => void;
+  startLoading: () => void;
+  stopLoading: () => void;
 };
 
-const SelectLevelStep: React.FC<SelectLevelStepProps> = ({ prev }) => {
+const SelectLevelStep: React.FC<SelectLevelStepProps> = ({ prev, startLoading, stopLoading }) => {
   const { formState, setFormState } = useCreateWorksheetContext();
   const [selectedLevel, setSelectedLevel] = useState(formState.notes.level);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,6 +49,7 @@ const SelectLevelStep: React.FC<SelectLevelStepProps> = ({ prev }) => {
   };
 
   const submitData = async () => {
+    startLoading();
     setIsSubmitting(true);
     try {
       const response = await fetch('/api/notes/upload', {
@@ -101,6 +104,7 @@ const SelectLevelStep: React.FC<SelectLevelStepProps> = ({ prev }) => {
       }
     } finally {
       setIsSubmitting(false);
+      stopLoading();
     }
   };
 

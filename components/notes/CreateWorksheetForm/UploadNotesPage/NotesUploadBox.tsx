@@ -1,15 +1,13 @@
-"use client";
 import React, { useState } from 'react';
 import { useCreateWorksheetContext } from '@/context/CreateWorksheetConext';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 type NotesUploadBoxProps = {
   onUploadSuccess: () => void;
+  startLoading: () => void;
 };
 
-const NotesUploadBox: React.FC<NotesUploadBoxProps> = ({ onUploadSuccess }) => {
+const NotesUploadBox: React.FC<NotesUploadBoxProps> = ({ onUploadSuccess, startLoading }) => {
   const [file, setFile] = useState<File | null>(null);
-  const [loading, setLoading] = useState(false);
   const { setFormState, formState } = useCreateWorksheetContext();
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,7 +20,7 @@ const NotesUploadBox: React.FC<NotesUploadBoxProps> = ({ onUploadSuccess }) => {
         reader.onload = async () => {
           if (typeof reader.result === 'string') {
             const base64File = reader.result.split(',')[1];
-            setLoading(true);
+            startLoading();
             try {
               const response = await fetch('/api/textExtract', {
                 method: 'POST',
@@ -35,7 +33,6 @@ const NotesUploadBox: React.FC<NotesUploadBoxProps> = ({ onUploadSuccess }) => {
               }
 
               const data = await response.json();
-
               setFormState((prev) => ({
                 ...prev,
                 notes: { ...prev.notes, text: data.text },
@@ -46,8 +43,6 @@ const NotesUploadBox: React.FC<NotesUploadBoxProps> = ({ onUploadSuccess }) => {
               if (error instanceof Error) {
                 console.error('Error during text extraction:', error.message);
               }
-            } finally {
-              setLoading(false);
             }
           }
         };
@@ -56,13 +51,9 @@ const NotesUploadBox: React.FC<NotesUploadBoxProps> = ({ onUploadSuccess }) => {
     }
   };
 
+
   return (
     <div className="relative">
-      {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50" data-testid="loading-spinner">
-          <LoadingSpinner />
-        </div>
-      )}
       <div className="relative bg-background rounded-lg p-4 border border-border theme-custom">
         <label htmlFor="file-upload" className="flex items-center justify-center flex-col pt-3 pb-4 w-full cursor-pointer">
           <img src="/file-upload-icon.svg" alt="File upload icon" width={40} height={32} />
@@ -76,7 +67,6 @@ const NotesUploadBox: React.FC<NotesUploadBoxProps> = ({ onUploadSuccess }) => {
         </label>
         <input
           id="file-upload"
-          data-testid="file-upload"
           type="file"
           accept="application/pdf,.pdf,application/msword,.doc,.docx,application/vnd.openxmlformats-officedocument.presentationml.presentation,.pptx,application/vnd.ms-powerpoint,.ppt,text/plain,.txt"
           style={{ display: 'none' }}

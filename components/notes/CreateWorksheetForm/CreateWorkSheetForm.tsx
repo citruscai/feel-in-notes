@@ -1,14 +1,14 @@
 'use client'
-import { useState } from "react";
+import React, { useState, ReactElement } from "react";
 import { useCreateWorksheetContext } from "@/context/CreateWorksheetConext";
 import UploadNotesStep from "@/components/notes/CreateWorksheetForm/UploadNotesPage/UploadNotesStep";
 import SelectLevelStep from "@/components/notes/CreateWorksheetForm/SelectLevelPage/SelectLevelStep";
 
-const CreateWorksheetForm = () => {
-  const [step, setStep] = useState(0);
+const CreateWorksheetForm: React.FC = () => {
+  const [step, setStep] = useState<number>(0);
   const { formState } = useCreateWorksheetContext();
 
-  const steps = [
+  const steps: ReactElement[] = [
     <UploadNotesStep key="upload" next={() => setStep(step + 1)} />,
     <SelectLevelStep key="select-level" prev={() => setStep(step - 1)} />,
   ];

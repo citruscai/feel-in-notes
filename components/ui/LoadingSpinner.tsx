@@ -7,6 +7,7 @@ interface LoadingSpinnerProps {
 
 export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ className }) => (
   <svg
+    data-testid="loading-spinner"
     xmlns="http://www.w3.org/2000/svg"
     width="24"
     height="24"

@@ -5,7 +5,7 @@
   "scripts": {
     "flask-dev": "set FLASK_DEBUG=1 && pip install -r api/requirements.txt && python api/run.py",
     "next-dev": "next dev",
-    "dev": "concurrently \"pnpm run next-dev\" \"pnpm run flask-dev\"",
+    "dev": "concurrently \"npx pnpm run next-dev\" \"npx pnpm run flask-dev\"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -73,6 +73,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "jest-fetch-mock": "^3.0.3",
     "ts-jest": "^29.1.5",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "pnpm": "^8.0.0"  
   }
 }

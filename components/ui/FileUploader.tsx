@@ -1,6 +1,7 @@
 "use client";
 import React, { useCallback, useState, useEffect, useRef, createContext, useContext } from 'react';
 import { useDropzone, DropzoneOptions, FileRejection } from 'react-dropzone';
+import { Trash2 as RemoveIcon } from "lucide-react";
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 

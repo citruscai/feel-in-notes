@@ -19,6 +19,7 @@ class DevelopmentConfig(Config):
 class TestingConfig(Config):
     """Testing configuration."""
     TESTING = True
+    SERVER_NAME = 'localhost.localdomain'
 
 class ProductionConfig(Config):
     """Production configuration."""

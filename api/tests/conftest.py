@@ -1,8 +1,15 @@
 """Fixtures for testing the Flask application."""
 
+import sys
+import os
 import pytest
 from unittest.mock import MagicMock, patch
-from config import TestingConfig
+
+# Ensure the 'api' directory is in sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'app')))
+
+from config import TestingConfig  # Adjust the import path to match the directory structure
 from app import create_app
 
 @pytest.fixture(scope="module")
@@ -22,7 +29,7 @@ def client(app_fixture):
 @pytest.fixture(scope="module")
 def mock_mongo():
     """Mock MongoDB connections."""
-    with patch('app.db.mongo.db') as mock_db:
+    with patch('app.db.DB', MagicMock(name="mocked_db")) as mock_db:
         mock_notes_collection = MagicMock()
         mock_worksheets_collection = MagicMock()
 

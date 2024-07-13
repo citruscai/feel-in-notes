@@ -1,14 +1,13 @@
 """Routes for handling worksheet-related operations."""
-
 import os
-import tempfile
 import uuid
 from flask import Blueprint, request, jsonify
 import boto3
 from werkzeug.utils import secure_filename
 from bson import json_util
-from ..db import get_worksheets_collection
 from dotenv import load_dotenv
+from ..db import get_worksheets_collection
+
 
 load_dotenv()
 worksheets_bp = Blueprint("worksheets", __name__)
@@ -58,22 +57,13 @@ def upload_worksheet():
         sanitized_filename = secure_filename(file.filename)
         print(f"Sanitized filename: {sanitized_filename}")
 
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
-            temp_file.write(file.read())
-            temp_file_path = temp_file.name
-
-        print(f"File saved temporarily to {temp_file_path}")
-
         try:
-            s3_client.upload_file(temp_file_path, BUCKET_NAME, sanitized_filename)
+            s3_client.upload_fileobj(file, BUCKET_NAME, sanitized_filename)
             file_url = f"https://{BUCKET_NAME}.s3.amazonaws.com/{sanitized_filename}"
             print(f"File uploaded successfully to: {file_url}")
         except boto3.exceptions.S3UploadFailedError as e:
             print(f"Error uploading file to S3: {e}")
             return jsonify({"error": f"Error uploading file to S3: {e}"}), 500
-        finally:
-            os.remove(temp_file_path)
-            print(f"Temporary file {temp_file_path} removed")
 
         return jsonify({"file_url": file_url}), 200
 
@@ -86,9 +76,9 @@ def save_urls():
     """Save URLs for guided notes and solutions to the worksheet document."""
     try:
         data = request.json
-        worksheet_id = data["id"]
-        guided_notes_url = data["guidedNotesUrl"]
-        solutions_url = data["solutionsUrl"]
+        worksheet_id = data.get("id")
+        guided_notes_url = data.get("guidedNotesUrl")
+        solutions_url = data.get("solutionsUrl")
 
         try:
             uuid.UUID(worksheet_id)
@@ -112,6 +102,7 @@ def save_urls():
         return jsonify({"message": "URLs saved successfully"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 @worksheets_bp.route("/<worksheet_id>", methods=["GET"])
 def get_worksheet(worksheet_id):

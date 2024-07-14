@@ -1,0 +1,6 @@
+build:
+  docker:
+    web: DockerFile
+
+run:
+  web: python /app/api/run.py

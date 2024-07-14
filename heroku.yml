@@ -1,6 +1,6 @@
 build:
   docker:
-    web: DockerFile
+    web: Dockerfile
 
 run:
-  web: pnpm run dev
+  web: ./start.sh

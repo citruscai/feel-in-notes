@@ -3,4 +3,4 @@ build:
     web: DockerFile
 
 run:
-  web: python /app/api/run.py
+  web: pnpm run dev

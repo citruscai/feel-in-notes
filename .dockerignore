@@ -6,3 +6,8 @@ api/__pycache__
 api/.pytest_cache
 api/routes/__pycache__
 utils/__pycache__
+.next
+.vercel
+.vscode
+.vscode
+

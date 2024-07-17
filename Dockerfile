@@ -1,4 +1,5 @@
-FROM python:3.11-bullseye
+
+FROM python:3.11-slim-bullseye AS base
 
 # Install dependencies
 RUN apt-get update && \
@@ -15,6 +16,8 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 # Install pnpm
 RUN npm install -g pnpm
 
+# Build stage for frontend
+FROM base AS build
 WORKDIR /workspace
 
 # Copy and install frontend dependencies
@@ -24,8 +27,15 @@ RUN pnpm install
 # Copy the rest of the application code
 COPY . .
 
+# Production stage for final image
+FROM base AS final
+WORKDIR /workspace
+
+# Copy only the necessary files from the build stage
+COPY --from=build /workspace /workspace
+
 # Install backend dependencies
-RUN pip install -r api/requirements.txt
+RUN pip install --no-cache-dir -r api/requirements.txt
 
 ENV FLASK_APP=api/run.py
 ENV FLASK_ENV=development

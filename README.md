@@ -17,6 +17,7 @@ As a student with ADHD, taking notes for my classes could be a very stressful pr
 
 I created this web application to finally solve this problem!
 ## Features
+![Screenshot 2024-07-19 112939](https://github.com/user-attachments/assets/8c30a4f1-c078-4702-96a6-156b8cbddba2)
 
 - **Guided Notes Creation**: Generate fill-in-the-blank notes and question-based notes from various resources such as PowerPoint slides, articles, YouTube links, and given text.
 - **Interactive Notes**: Use an interactive version of the notes directly within the application, allowing students to fill in blanks and answer questions in real-time.

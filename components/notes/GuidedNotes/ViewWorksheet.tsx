@@ -6,6 +6,7 @@ import Sidebar from './Sidebar';
 import PDFViewer from './PdfViewer';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Section } from '@/lib/types';
+import { getWorksheet } from '@/lib/serverFunctions';
 
 interface ViewWorksheetProps {
   worksheetId: string;
@@ -22,11 +23,8 @@ const ViewWorksheet: React.FC<ViewWorksheetProps> = ({ worksheetId, view, setVie
     const fetchAndSetWorksheet = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`/api/worksheets/${worksheetId}`);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch worksheet with ID: ${worksheetId}`);
-        }
-        const worksheetData = await response.json();
+        const worksheetData = await getWorksheet(worksheetId);
+        console.log(worksheetData)
         setWorksheet(worksheetData);
 
         const numAnswers = worksheetData.questions ? worksheetData.questions.length : worksheetData.sections.reduce((count: number, section: Section) => {

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useCreateWorksheetContext } from '@/context/CreateWorksheetConext';
+import { fetchTranscript } from '@/lib/serverFunctions';
 
 interface YoutubeLinkProps {
   onLinkSubmit: () => void;
@@ -13,38 +14,22 @@ const YoutubeLink: React.FC<YoutubeLinkProps> = ({ onLinkSubmit, startLoading })
   const { setFormState } = useCreateWorksheetContext();
   const [error, setError] = useState<string | null>(null);
 
-  const fetchTranscript = async (videoId: string) => {
-    try {
-      startLoading();
-      setError(null);
-      const response = await fetch('/api/youtubeTranscript', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ videoId }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch the transcript');
-      }
-
-      const transcript = await response.json();
-      const transcriptText = transcript.map((item: { text: string }) => item.text).join(' ');
-      setFormState((prev) => ({
-        ...prev,
-        notes: { ...prev.notes, text: transcriptText, youtubeLink },
-      }));
-      onLinkSubmit();
-    } catch (err) {
-      setError('Failed to fetch the transcript. Please check the link.');
-    }
-  };
-
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const videoId = youtubeLink.split('v=')[1]?.split('&')[0];
     if (videoId) {
-      fetchTranscript(videoId);
+      try {
+        startLoading();
+        setError(null);
+        const transcript = await fetchTranscript(videoId);
+        const transcriptText = transcript.map((item: { text: string }) => item.text).join(' ');
+        setFormState((prev) => ({
+          ...prev,
+          notes: { ...prev.notes, text: transcriptText, youtubeLink },
+        }));
+        onLinkSubmit();
+      } catch (err) {
+        setError('Failed to fetch the transcript. Please check the link.');
+      }
     } else {
       setError('Invalid YouTube link.');
     }

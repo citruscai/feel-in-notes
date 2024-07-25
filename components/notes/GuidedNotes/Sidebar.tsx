@@ -5,7 +5,7 @@ import IconFilePdf from '@/components/ui/icons/IconFilePdf';
 
 interface SidebarProps {
   view: 'pdf' | 'interactive';
-  worksheet: any; // Adjust the type based on your actual worksheet type
+  worksheet: any; 
   setView: (view: 'pdf' | 'interactive') => void;
 }
 

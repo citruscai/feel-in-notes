@@ -19,7 +19,7 @@ I created this web application to finally solve this problem!
 ## Features
 ![Screenshot 2024-07-19 112939](https://github.com/user-attachments/assets/8c30a4f1-c078-4702-96a6-156b8cbddba2)
 
-- **Guided Notes Creation**: Generate fill-in-the-blank notes and question-based notes from various resources such as PowerPoint slides, articles, YouTube links, and given text.
+- **Guided Notes Creation**: Generate fill-in-the-blank notes and question-based notes in PDF format from various resources such as PowerPoint slides, articles, YouTube links, and given text.
 - **Interactive Notes**: Use an interactive version of the notes directly within the application, allowing students to fill in blanks and answer questions in real-time.
 - **Progress Saving**: Save your progress on interactive notes, making it easy to pick up where you left off at any time.
 - **Multiple Input Formats**: Support for uploading documents, pasting YouTube links, and inputting text directly to generate notes.

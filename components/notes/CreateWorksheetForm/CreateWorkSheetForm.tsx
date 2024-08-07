@@ -1,6 +1,5 @@
 'use client'
 import React, { useState, ReactElement } from "react";
-import { useCreateWorksheetContext } from "@/context/CreateWorksheetConext";
 import UploadNotesStep from "@/components/notes/CreateWorksheetForm/UploadNotesPage/UploadNotesStep";
 import SelectLevelStep from "@/components/notes/CreateWorksheetForm/SelectLevelPage/SelectLevelStep";
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
@@ -8,7 +7,7 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 const CreateWorksheetForm: React.FC = () => {
   const [step, setStep] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
-  const { formState } = useCreateWorksheetContext();
+ 
 
   const steps: ReactElement[] = [
     <UploadNotesStep key="upload" next={() => setStep(step + 1)} startLoading={() => setLoading(true)} stopLoading={() => setLoading(false)} />,

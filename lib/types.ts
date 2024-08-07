@@ -11,6 +11,8 @@ export type Worksheet ={
     id:string,
     text:string,
     level:string
+    guided_notes_url:string,
+   solutions_url:string,
 }
 
 export interface Params {

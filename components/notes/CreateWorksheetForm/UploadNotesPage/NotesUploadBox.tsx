@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useCreateWorksheetContext } from '@/context/CreateWorksheetConext';
+import{extractTextFromFile }from '@/lib/serverFunctions';
 
 type NotesUploadBoxProps = {
   onUploadSuccess: () => void;
@@ -22,20 +23,12 @@ const NotesUploadBox: React.FC<NotesUploadBoxProps> = ({ onUploadSuccess, startL
             const base64File = reader.result.split(',')[1];
             startLoading();
             try {
-              const response = await fetch('/api/textExtract', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ file: base64File })
-              });
+              const buffer = Buffer.from(base64File, 'base64');
+              const text = await extractTextFromFile(buffer);
 
-              if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-              }
-
-              const data = await response.json();
               setFormState((prev) => ({
                 ...prev,
-                notes: { ...prev.notes, text: data.text },
+                notes: { ...prev.notes, text },
               }));
 
               onUploadSuccess();

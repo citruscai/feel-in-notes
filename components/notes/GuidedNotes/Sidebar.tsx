@@ -2,10 +2,11 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import IconFileWord from '@/components/ui/icons/IconFileWord';
 import IconFilePdf from '@/components/ui/icons/IconFilePdf';
+import { Worksheet } from '@/lib/types';
 
 interface SidebarProps {
   view: 'pdf' | 'interactive';
-  worksheet: any; 
+  worksheet: Worksheet; 
   setView: (view: 'pdf' | 'interactive') => void;
 }
 

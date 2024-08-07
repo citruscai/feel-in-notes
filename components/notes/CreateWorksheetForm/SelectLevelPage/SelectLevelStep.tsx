@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { generatePDF } from '@/lib/worksheetGenerator';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { uploadNotes, uploadWorksheet, saveWorksheetUrls } from '@/lib/serverFunctions';
 
 type SelectLevelStepProps = {
   prev: () => void;
@@ -31,38 +32,11 @@ const SelectLevelStep: React.FC<SelectLevelStepProps> = ({ prev, startLoading, s
     return text.replace(/‘/g, "'").replace(/’/g, "'");
   };
 
-  const uploadWorksheet = async (pdf: Blob, fileName: string): Promise<string> => {
-    const formData = new FormData();
-    formData.append('file', pdf, fileName);
-
-    const response = await fetch('/api/worksheets/upload', {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to upload PDF: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    return data.file_url;
-  };
-
   const submitData = async () => {
     startLoading();
     setIsSubmitting(true);
     try {
-      const response = await fetch('/api/notes/upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: formState.notes.text, level: selectedLevel })
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to upload notes: ${response.statusText}`);
-      }
-
-      const jsonResponse = await response.json();
+      const jsonResponse = await uploadNotes(formState.notes.text, selectedLevel);
 
       let parsedText;
       try {
@@ -87,15 +61,7 @@ const SelectLevelStep: React.FC<SelectLevelStepProps> = ({ prev, startLoading, s
       const guidedNotesUrl = await uploadWorksheet(guidedNotesPdf, `${sanitizedTitle}-guided-notes.pdf`);
       const solutionsUrl = await uploadWorksheet(solutionsPdf, `${sanitizedTitle}-solutions.pdf`);
 
-      const saveResponse = await fetch('/api/worksheets/save-urls', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: jsonResponse.id, guidedNotesUrl, solutionsUrl })
-      });
-
-      if (!saveResponse.ok) {
-        throw new Error('Failed to save PDF URLs');
-      }
+      await saveWorksheetUrls(jsonResponse.id, guidedNotesUrl, solutionsUrl);
 
       router.push(`/guidednotes/${jsonResponse.id}`);
     } catch (error) {

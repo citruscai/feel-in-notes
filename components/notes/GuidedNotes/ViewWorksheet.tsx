@@ -17,7 +17,7 @@ interface ViewWorksheetProps {
 const ViewWorksheet: React.FC<ViewWorksheetProps> = ({ worksheetId, view, setView }) => {
   const context = useContext(NotesContext);
   if (!context) throw new Error("NotesContext must be used within a NotesProvider");
-  const { setWorksheet, setUserAnswers, setLoading, loading, worksheet, userAnswers } = context;
+  const { setWorksheet, setUserAnswers, setLoading, loading, worksheet } = context;
 
   useEffect(() => {
     const fetchAndSetWorksheet = async () => {

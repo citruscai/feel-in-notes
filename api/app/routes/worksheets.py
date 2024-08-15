@@ -40,13 +40,9 @@ def upload_worksheet():
             print("Invalid file")
             return jsonify({"error": "Invalid file"}), 400
 
-        print(f"Received file: {file}")
-        filename = secure_filename(file.filename)
-        print(f"Filename: {filename}")
-        print(f"Content-Type: {file.content_type}")
 
         content_length = len(file.read())
-        print(f"File content length: {content_length}")
+
 
         file.seek(0)
 

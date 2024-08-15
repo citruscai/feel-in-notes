@@ -17,7 +17,7 @@ type SelectLevelStepProps = {
 const SelectLevelStep: React.FC<SelectLevelStepProps> = ({ prev, startLoading, stopLoading }) => {
   const { formState, setFormState } = useCreateWorksheetContext();
   const [selectedLevel, setSelectedLevel] = useState(formState.notes.level);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [notesId,setNotesId] = useState<string|null>();
   const router = useRouter();
 
   const handleLevelChange = useCallback((value: string) => {
@@ -34,7 +34,6 @@ const SelectLevelStep: React.FC<SelectLevelStepProps> = ({ prev, startLoading, s
 
   const submitData = async () => {
     startLoading();
-    setIsSubmitting(true);
     try {
       const jsonResponse = await uploadNotes(formState.notes.text, selectedLevel);
 
@@ -60,27 +59,21 @@ const SelectLevelStep: React.FC<SelectLevelStepProps> = ({ prev, startLoading, s
 
       const guidedNotesUrl = await uploadWorksheet(guidedNotesPdf, `${sanitizedTitle}-guided-notes.pdf`);
       const solutionsUrl = await uploadWorksheet(solutionsPdf, `${sanitizedTitle}-solutions.pdf`);
-
+     
       await saveWorksheetUrls(jsonResponse.id, guidedNotesUrl, solutionsUrl);
-
       router.push(`/guidednotes/${jsonResponse.id}`);
+    
     } catch (error) {
       if (error instanceof Error) {
         console.error("Error:", error.message);
       }
     } finally {
-      setIsSubmitting(false);
       stopLoading();
     }
   };
 
   return (
-    <div className="relative">
-      {isSubmitting && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
-          <LoadingSpinner />
-        </div>
-      )}
+    <div className='relvative'>
 
       <div className="grid grid-cols-[1fr_300px] gap-8 w-full max-w-6xl mx-auto py-12 px-4 md:px-6">
         <div className="flex flex-col justify-between h-full">
@@ -96,11 +89,10 @@ const SelectLevelStep: React.FC<SelectLevelStepProps> = ({ prev, startLoading, s
             </Button>
             <Button
               onClick={submitData}
-              disabled={isSubmitting}
               variant="default"
-              className={`${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+            
             >
-              {isSubmitting ? 'Submitting...' : 'Submit'}
+              Submit
             </Button>
           </div>
         </div>

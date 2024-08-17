@@ -42,8 +42,6 @@ def upload_worksheet():
 
 
         content_length = len(file.read())
-
-
         file.seek(0)
 
         if content_length == 0:

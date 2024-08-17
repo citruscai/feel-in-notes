@@ -1,13 +1,13 @@
 import React from 'react';
 import SimpleTemplate from '@/components/ui/worksheetTemplates/SimpleTemplate';
 import { pdf, Document} from '@react-pdf/renderer';
-import { JsonData } from '@/lib/types';
+import { GuidedNotesJSON } from '@/lib/types';
 
 
-export const generatePDF = async (jsonData: JsonData, level: string, includeAnswers = false): Promise<Blob> => {
+export const generatePDF = async (guidedNotesJSON: GuidedNotesJSON, level: string, includeAnswers = false): Promise<Blob> => {
   const element = (
     <Document>
-      <SimpleTemplate jsonData={jsonData} includeAnswers={includeAnswers} />
+      <SimpleTemplate guidedNotesJSON={guidedNotesJSON} includeAnswers={includeAnswers} />
     </Document>
   );
   const pdfDoc = pdf();

@@ -46,18 +46,12 @@ const Sidebar: React.FC<SidebarProps> = ({ view, worksheet, setView }) => {
                 <IconFilePdf className="w-4 h-4 mr-2" />
                 Download Solutions (.pdf)
               </Button>
-              {worksheet.guided_notes_url && (
-                <Button size="sm" variant="outline" onClick={() => downloadFile(worksheet.guided_notes_url.replace('.pdf', '.docx'), 'worksheet.docx')}>
-                  <IconFileWord className="w-4 h-4 mr-2" />
-                  Download in DOCX format
-                </Button>
-              )}
             </div>
           </div>
           <div>
             <h3 className="text-lg font-semibold">Interactive Version</h3>
             <p className="text-muted-foreground text-sm mt-2">
-              View an interactive version of the lecture notes with embedded examples and exercises.
+              View an interactive version of your guided notes to use digitally!
             </p>
             <Button size="sm" className="mt-2" onClick={() => setView('interactive')}>
               View Interactive Version

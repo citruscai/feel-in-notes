@@ -5,7 +5,6 @@ import QuestionAnswerNotes from './QuestionAnswerNotes';
 import Sidebar from './Sidebar';
 import PDFViewer from './PdfViewer';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { Section } from '@/lib/types';
 import { getWorksheet } from '@/lib/serverFunctions';
 
 interface ViewWorksheetProps {
@@ -15,33 +14,63 @@ interface ViewWorksheetProps {
 }
 
 const ViewWorksheet: React.FC<ViewWorksheetProps> = ({ worksheetId, view, setView }) => {
-  const context = useContext(NotesContext);
-  if (!context) throw new Error("NotesContext must be used within a NotesProvider");
-  const { setWorksheet, setUserAnswers, setLoading, loading, worksheet } = context;
+const context = useContext(NotesContext);
+const { setWorksheet, setUserAnswers, setLoading, loading, worksheet, setGuidedNotesJSON,guidedNotesJSON} = context;
+useEffect(() => {
+  const fetchAndSetWorksheet = async () => {
+    setLoading(true);
+    try {
+      const worksheetData = await getWorksheet(worksheetId);
+      const worksheetText = worksheetData.text
+        .replace(/^```json\n/, '')
+        .replace(/\n```$/, '')
+        .replace(/\\n/g, '');
+      const worksheetJSON = JSON.parse(worksheetText);
 
-  useEffect(() => {
-    const fetchAndSetWorksheet = async () => {
-      setLoading(true);
-      try {
-        const worksheetData = await getWorksheet(worksheetId);
-        console.log(worksheetData)
-        setWorksheet(worksheetData);
+      setGuidedNotesJSON(worksheetJSON);
+      setWorksheet(worksheetData);
 
-        const numAnswers = worksheetData.questions ? worksheetData.questions.length : worksheetData.sections.reduce((count: number, section: Section) => {
-          return count + (section.content.join(' ').match(/<mark>/g) || []).length;
-        }, 0);
-
-        setUserAnswers(new Array(numAnswers).fill(''));
-      } catch (error) {
-        console.error("Failed to fetch worksheet", error);
-      } finally {
-        setLoading(false);
+      
+      let numAnswers = 0;
+      if (worksheetJSON?.sections) {
+        worksheetJSON.sections.forEach((section) => {
+          if (section.content) {
+            section.content.forEach((content) => {
+              const matches = content.match(/<mark>(.*?)<\/mark>/g);
+              if (matches) {
+                numAnswers += matches.length;
+              }
+            });
+          }
+      
+          if (section.lists) {
+            section.lists.forEach((list) => {
+              if (list.items) {
+                list.items.forEach((item) => {
+                  const matches = item.match(/<mark>(.*?)<\/mark>/g);
+                  if (matches) {
+                    numAnswers += matches.length;
+                  }
+                });
+              }
+            });
+          }
+        });
       }
-    };
+      setUserAnswers(new Array(numAnswers).fill(''));
+    } catch (error) {
+      console.error("Failed to fetch worksheet", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchAndSetWorksheet();
-  }, [worksheetId]);
+  fetchAndSetWorksheet();
+}, [worksheetId]);
 
+
+
+  
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -57,7 +86,7 @@ const ViewWorksheet: React.FC<ViewWorksheetProps> = ({ worksheetId, view, setVie
       )}
       {view === 'interactive' && (
         <div className="bg-background rounded-lg shadow-lg p-6 w-full max-w-3xl mx-auto">
-          {worksheet.questions ? (
+          {guidedNotesJSON.questions ? (
             <QuestionAnswerNotes />
           ) : (
             <FillInTheBlankNotes />

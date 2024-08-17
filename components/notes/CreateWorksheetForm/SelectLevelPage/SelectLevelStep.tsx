@@ -37,31 +37,31 @@ const SelectLevelStep: React.FC<SelectLevelStepProps> = ({ prev, startLoading, s
     try {
       const jsonResponse = await uploadNotes(formState.notes.text, selectedLevel);
 
-      let parsedText;
+      let guidedNotesJSON;
       try {
         const sanitizedText = jsonResponse.text
           .replace(/^```json\n/, '')
           .replace(/\n```$/, '')
           .replace(/\\n/g, '');
         const standardizedText = replaceNonStandardQuotes(sanitizedText);
-        parsedText = JSON.parse(standardizedText);
+        guidedNotesJSON = JSON.parse(standardizedText);
       } catch (parseError) {
         console.error('Error parsing text field:', parseError);
         throw new Error('Invalid JSON structure in text field.');
       }
 
-      const guidedNotesPdf = await generatePDF(parsedText, jsonResponse.level);
-      const solutionsPdf = await generatePDF(parsedText, jsonResponse.level, true);
+      const guidedNotesPdf = await generatePDF(guidedNotesJSON, jsonResponse.level);
+      const solutionsPdf = await generatePDF(guidedNotesJSON, jsonResponse.level, true);
 
-      const sanitizedTitle = parsedText.title
-        ? parsedText.title.replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').toLowerCase()
+      const sanitizedTitle = guidedNotesJSON.title
+        ? guidedNotesJSON.title.replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').toLowerCase()
         : 'guided-notes';
 
       const guidedNotesUrl = await uploadWorksheet(guidedNotesPdf, `${sanitizedTitle}-guided-notes.pdf`);
       const solutionsUrl = await uploadWorksheet(solutionsPdf, `${sanitizedTitle}-solutions.pdf`);
      
       await saveWorksheetUrls(jsonResponse.id, guidedNotesUrl, solutionsUrl);
-      router.push(`/guidednotes/${jsonResponse.id}`);
+     await router.push(`/guidednotes/${jsonResponse.id}`);
     
     } catch (error) {
       if (error instanceof Error) {

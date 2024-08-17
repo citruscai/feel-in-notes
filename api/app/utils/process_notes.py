@@ -2,13 +2,11 @@
 
 import os
 import re
-import nltk
-from nltk.tokenize import word_tokenize
 from summarizer import Summarizer
 import google.generativeai as gemini
 from dotenv import load_dotenv
 
-nltk.download('punkt')
+
 load_dotenv()
 api_key = os.getenv('GEMINI_API_KEY')
 gemini.configure(api_key=api_key)
@@ -17,10 +15,11 @@ def normalize_text(text):
     """Normalize text by removing excessive spaces and newline characters."""
     return re.sub(r'\s+', ' ', text).strip()
 
-def extract_important_sentences(text, summary_ratio=0.8):
+def extract_important_sentences(text, summary_ratio=0.5):
     """Extract key sentences using a summarization model."""
     model = Summarizer()
     summary = model(text, ratio=summary_ratio)
+    print(summary)
     return summary.split(',')
 
 def mark_important_sentences(full_text, important_sentences):
@@ -53,11 +52,11 @@ def structure_notes(text):
     - Generate a title based on the content if none is found.
     - Remove any '<mark>' tags from the 'title' property.
     - Preserve all existing '<mark>' tags in 'content', 'items', and any list-related properties.
-    - Add new '<mark>' tags around longer, significant information in 'content' and 'items' to create meaningful 
-    fill-in-the-blank sections. Each section should include longer phrases or sentences with '<mark>' tags suitable 
-    for fill-in-the-blank notes. If a section or list item already contains markings, ensure additional significant 
-    information is also marked.
-    Please make sure each content is at least 40% marked.
+    - **Add additional '<mark>' tags to cover all key concepts, important details, and significant phrases.** 
+    Focus on creating fill-in-the-blank opportunities that help reinforce the understanding of critical information.
+    - **Ensure that most sentences have at least one key phrase or detail marked.** Aim for a balanced approach where students must engage with the text by filling in gaps related to major ideas, terminology, and relationships between concepts.
+    - Where possible, mark entire phrases or sentences that contain crucial information.
+    - If a section or list item already contains markings, ensure additional significant information is also marked.
 
     Example structure:
 
@@ -84,7 +83,9 @@ def structure_notes(text):
     }}
 
     Given this structure, please format the following text for fill-in-the-blank guided notes, preserving all existing 
-    '<mark>' tags and ensuring that new '<mark>' tags cover longer phrases or sentences in 'content' and 'items': {text}
+    '<mark>' tags and **adding new '<mark>' tags around key concepts, important details, and significant phrases** 
+    in 'content' and 'items'. The goal is to create meaningful fill-in-the-blank sections that help students actively 
+    engage with and learn the material: {text}
     """
     safety_settings = [
         {"category": "HARM_CATEGORY_DANGEROUS", "threshold": "BLOCK_NONE"},
@@ -136,11 +137,10 @@ def process_text(text, level="questions"):
     if level == "blanks":
         important_sentences = extract_important_sentences(normalized_text)
         processed_text = mark_important_sentences(normalized_text, important_sentences)
-        print(processed_text)
+        return structure_notes(processed_text)
     elif level == "questions":
         processed_text = generate_questions(normalized_text)
         return structure_questions(processed_text)
     else:
         return "Invalid level specified"
     
-    return structure_notes(processed_text)

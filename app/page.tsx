@@ -11,7 +11,7 @@ export default function Home() {
       <div className="flex-grow w-full flex flex-col sm:flex-row py-4">
         <aside className="w-full sm:w-1/4 flex-shrink-0 px-4">
           <div className="sticky top-0 p-4 w-full h-full">
-            {/* Sidebar content */}
+            
           </div>
         </aside>
         <main role="main" className="w-full sm:w-2/4 flex-grow pt-1 px-3">
@@ -19,7 +19,7 @@ export default function Home() {
         </main>
         <aside className="w-full sm:w-1/4 flex-shrink-0 px-2">
           <div className="flex sm:flex-col px-2">
-            {/* Additional sidebar content */}
+         
           </div>
         </aside>
       </div>
